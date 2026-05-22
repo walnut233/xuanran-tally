@@ -1,0 +1,39 @@
+{
+  "pages.index.index": {
+    "layersTitle": "Layout布局",
+    "attachTitle": "Pinia使用",
+    "attachText": "状态管理",
+    "linkUnlinkTitle": "单一请求",
+    "linkUnlinkText": "请求(与状态分离)",
+    "linkTitle": "请求+状态",
+    "linkText": "请求(与状态结合)",
+    "userTitle": "登录示例",
+    "userText": "无感刷新",
+    "lockOffTitle": "权限控制",
+    "lockOffText": "路由与按钮",
+    "chartTitle": "图表组件",
+    "transferTitle": "WotUI组件",
+    "transferText": "高频组件",
+    "viewModuleTitle": "分页案例",
+    "viewListTitle": "国际化",
+    "menuFoldTitle": "自定义导航栏",
+    "menuFoldText": "自定义组件实现",
+    "chartBubbleTitle": "原子CSS",
+    "nowLocale": "简体中文",
+    "nowLocaleText": "设置语言（国际化）",
+    "darkMode": "暗黑模式：",
+    "darkModeFollowText": "暗黑模式跟随系统",
+    "about": "一个 “超超超” 好用的 uniapp 模板",
+    "bgColor1": "小黄",
+    "bgColor2": "橙色",
+    "bgColor3": "默认",
+    "authorText": "作者：大麦大麦"
+  },
+  "pages.i18nDemo.index": {
+    "title": "i18n 多语言 Demo",
+    "authorText": "作者：大麦大麦",
+    "about": "一个 “超超超” 好用的 uniapp 模板",
+    "nowLocale": "点击切换语言（简体中文）",
+    "calendarLabel": "日历"
+  }
+}

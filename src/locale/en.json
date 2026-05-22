@@ -1,0 +1,39 @@
+{
+  "pages.index.index": {
+    "layersTitle": "Layout SFC",
+    "attachTitle": "Pinia use",
+    "attachText": "State management",
+    "linkUnlinkTitle": "Single request",
+    "linkUnlinkText": "Separation",
+    "linkTitle": "Request+Status",
+    "linkText": "Combined",
+    "userTitle": "Login example",
+    "userText": "Noninductive refresh",
+    "lockOffTitle": "Right control",
+    "lockOffText": "Routes and buttons",
+    "chartTitle": "Chart module",
+    "transferTitle": "WotUI module",
+    "transferText": "High-frequency",
+    "viewModuleTitle": "Paging case",
+    "viewListTitle": "Multilingual",
+    "menuFoldTitle": "Customize bar",
+    "menuFoldText": "Custom component",
+    "chartBubbleTitle": "Atomic CSS",
+    "nowLocale": "English-US",
+    "nowLocaleText": "Language setting (i18n)",
+    "darkMode": "Dark Mode: ",
+    "darkModeFollowText": "Dark mode follow system",
+    "about": "A 'super super super' easy to use uniapp template",
+    "bgColor1": "Yellow",
+    "bgColor2": "Orange",
+    "bgColor3": "Default",
+    "authorText": "Author: DaMaiCoding"
+  },
+  "pages.i18nDemo.index": {
+    "title": "i18n Multilingual Demo",
+    "authorText": "Author: DaMaiCoding",
+    "about": "A 'super super super' easy to use uniapp template",
+    "nowLocale": "Click to switch language(English-US)",
+    "calendarLabel": "Calendar"
+  }
+}

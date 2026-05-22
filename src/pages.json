@@ -1,0 +1,184 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"type": "home",
+			"layout": "theme",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/customDemo/index",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/echartsDemo/index",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "图表 dome"
+			}
+		},
+		{
+			"path": "pages/i18nDemo/index",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "%pages.index.index.title%"
+			}
+		},
+		{
+			"path": "pages/layoutDemo/index",
+			"type": "page",
+			"layout": "fullPage",
+			"style": {
+				"navigationBarTitleText": "布局 Demo"
+			}
+		},
+		{
+			"path": "pages/piniaDemo/index",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "pinia 使用 dome"
+			}
+		},
+		{
+			"path": "pages/queryDemo/loginDemo",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "登录请求示例"
+			}
+		},
+		{
+			"path": "pages/queryDemo/queryTestDemo",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "请求测试页面"
+			}
+		},
+		{
+			"path": "pages/queryDemo/useRequestDemo",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "useRequest使用示例"
+			}
+		},
+		{
+			"path": "pages/queryDemo/zPagingDemo",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "z-paging 使用示例"
+			}
+		},
+		{
+			"path": "pages/routerDemo/index",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "页面路由权限控制"
+			}
+		},
+		{
+			"path": "pages/routerDemo/login",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "登录页"
+			}
+		},
+		{
+			"path": "pages/routerDemo/page1",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "页面1"
+			},
+			"permissionKeys": [
+				"vip"
+			]
+		},
+		{
+			"path": "pages/routerDemo/page2",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "页面2"
+			},
+			"permissionKeys": [
+				"vip",
+				"admin"
+			]
+		},
+		{
+			"path": "pages/routerDemo/page3",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "页面3"
+			},
+			"permissionKeys": [
+				"logined"
+			]
+		},
+		{
+			"path": "pages/unocssDemo/index",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "Unocss 使用 dome"
+			}
+		},
+		{
+			"path": "pages/wotUiDemo/index",
+			"type": "page",
+			"layout": "theme",
+			"style": {
+				"navigationBarTitleText": "Wot UI Demo"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "@navTxtStyle",
+		"navigationBarBackgroundColor": "@navBgColor",
+		"backgroundColor": "@bgColor"
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue",
+			"^(?!z-paging-refresh|z-paging-load-more)z-paging(.*)": "z-paging/components/z-paging$1/z-paging$1.vue"
+		}
+	},
+	"subPackages": [
+		{
+			"root": "pages-sub",
+			"pages": [
+				{
+					"path": "subDemo/index",
+					"type": "page",
+					"style": {
+						"navigationBarTitleText": "subDemo 分包页面"
+					}
+				},
+				{
+					"path": "testDemo/index",
+					"type": "page",
+					"layout": "default",
+					"style": {
+						"navigationBarTitleText": "测试页面"
+					}
+				}
+			]
+		}
+	]
+}
