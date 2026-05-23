@@ -66,17 +66,19 @@
         </div>
 
         <!-- Quick Actions -->
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px">
+        <div style="display: flex; justify-content: center; margin-bottom: 24px">
           <button
             v-for="action in quickActions"
             :key="action.id"
             style="
-              aspect-ratio: 1;
+              width: 100%;
+              height: 60px;
               display: flex;
-              flex-direction: column;
+              flex-direction: row;
               align-items: center;
               justify-content: center;
-              padding: 8px;
+              gap: 8px;
+              padding: 8px 16px;
               background: white;
               border: 1px solid #f3f4f6;
             "
@@ -389,9 +391,6 @@ const tabs = [
 ]
 
 const quickActions = [
-  { id: 'members', name: '会员', icon: 'users', route: '/pages/member/list' },
-  { id: 'recharge', name: '充值', icon: 'wallet', route: '/pages/recharge/index' },
-  { id: 'consume', name: '消费', icon: 'ticket', route: '/pages/consumption/index' },
   { id: 'settings', name: '设置', icon: 'settings', route: '/pages/settings/index' }
 ]
 
