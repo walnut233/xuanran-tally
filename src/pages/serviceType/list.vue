@@ -87,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onShow } from 'vue'
+import { ref } from 'vue'
 import { serviceTypeService } from '@/services/serviceTypeService'
 import type { ServiceType } from '@/types'
 
