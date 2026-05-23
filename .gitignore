@@ -14,6 +14,9 @@ node_modules
 dist
 *.local
 
+# Claude Code settings
+.claude
+
 # Editor directories and files
 .idea
 *.suo

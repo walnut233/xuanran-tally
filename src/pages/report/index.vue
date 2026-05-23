@@ -2,111 +2,177 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '报表统计'
+    navigationStyle: 'custom'
   }
 }
 </route>
 
 <template>
-  <div class="min-h-100vh bg-gray-100">
-    <!-- 时间选择 -->
-    <div class="bg-white p-30rpx">
-      <wd-tab v-model="activeTab">
-        <wd-tab-pane title="日报" name="day"></wd-tab-pane>
-        <wd-tab-pane title="月报" name="month"></wd-tab-pane>
-      </wd-tab>
+  <div style="min-height: 100vh; background-color: #f9fafb;">
+    <!-- Custom Header -->
+    <div style="background-color: white; border-bottom: 1px solid #f3f4f6; position: sticky; top: 0; z-index: 40;">
+      <div style="height: 32px;"></div>
+      <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 16px;">
+        <div style="font-size: 20px; font-weight: 600; color: #1f2937; margin-bottom: 12px;">报表统计</div>
+        <div style="display: flex; gap: 6px; background-color: #f9fafb; padding: 6px;">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            style="flex: 1; padding: 10px 0; font-size: 14px; font-weight: 500; border: none; cursor: pointer;"
+            :style="activeTab === tab.id ? 'background-color: white; color: #0d9488;' : 'background-color: transparent; color: #6b7280;'"
+            @click="activeTab = tab.id"
+          >
+            {{ tab.name }}
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- 日报 -->
-    <div class="p-30rpx" v-if="activeTab === 'day'">
-      <!-- 日期选择 -->
-      <div class="bg-white rounded-20rpx p-30rpx shadow-sm mb-30rpx">
-        <wd-datetime-picker v-model="selectedDate" type="date" title="选择日期">
-          <div class="flex justify-between items-center">
-            <span class="text-30rpx text-gray-600">日期</span>
-            <span class="text-30rpx text-gray-800">{{ formatDate(selectedDate) }}</span>
+    <!-- Content -->
+    <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 96px;">
+      <!-- 日报 -->
+      <div v-if="activeTab === 'day'">
+        <!-- 日期选择 -->
+        <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;" @click="showDatePicker = true">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 14px; font-weight: 500; color: #1f2937;">日期</span>
+            <span style="font-size: 14px; color: #4b5563;">{{ formatDate(selectedDate) }}</span>
           </div>
-        </wd-datetime-picker>
-      </div>
-
-      <!-- 统计卡片 -->
-      <div class="grid grid-cols-2 gap-30rpx mb-30rpx">
-        <div class="bg-white rounded-20rpx p-30rpx shadow-sm text-center">
-          <div class="text-56rpx font-bold text-green-500">{{ dayStats.rechargeCount }}</div>
-          <div class="text-26rpx text-gray-500 mt-10rpx">充值次数</div>
         </div>
-        <div class="bg-white rounded-20rpx p-30rpx shadow-sm text-center">
-          <div class="text-56rpx font-bold text-blue-500">¥{{ dayStats.rechargeAmount }}</div>
-          <div class="text-26rpx text-gray-500 mt-10rpx">充值金额</div>
-        </div>
-        <div class="bg-white rounded-20rpx p-30rpx shadow-sm text-center">
-          <div class="text-56rpx font-bold text-orange-500">{{ dayStats.consumptionCount }}</div>
-          <div class="text-26rpx text-gray-500 mt-10rpx">消费次数</div>
-        </div>
-      </div>
 
-      <!-- 服务类型统计 -->
-      <div class="bg-white rounded-20rpx shadow-sm overflow-hidden mb-30rpx" v-if="Object.keys(dayServiceStats).length > 0">
-        <wd-cell-group title="服务类型统计">
-          <wd-cell v-for="(count, type) in dayServiceStats" :key="type" :title="type" :value="`${count} 次`"></wd-cell>
-        </wd-cell-group>
-      </div>
-
-      <!-- 美发师统计 -->
-      <div class="bg-white rounded-20rpx shadow-sm overflow-hidden" v-if="Object.keys(dayHairstylistStats).length > 0">
-        <wd-cell-group title="美发师统计">
-          <wd-cell v-for="(count, name) in dayHairstylistStats" :key="name" :title="name" :value="`${count} 次`"></wd-cell>
-        </wd-cell-group>
-      </div>
-    </div>
-
-    <!-- 月报 -->
-    <div class="p-30rpx" v-if="activeTab === 'month'">
-      <!-- 月份选择 -->
-      <div class="bg-white rounded-20rpx p-30rpx shadow-sm mb-30rpx">
-        <wd-datetime-picker v-model="selectedMonth" type="year-month" title="选择月份">
-          <div class="flex justify-between items-center">
-            <span class="text-30rpx text-gray-600">月份</span>
-            <span class="text-30rpx text-gray-800">{{ formatMonth(selectedMonth) }}</span>
+        <!-- 统计卡片 -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">{{ dayStats.rechargeCount }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">充值次数</div>
           </div>
-        </wd-datetime-picker>
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">¥{{ dayStats.rechargeAmount }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">充值金额</div>
+          </div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">{{ dayStats.consumptionCount }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">消费次数</div>
+          </div>
+        </div>
+
+        <!-- 服务类型统计 -->
+        <div style="margin-bottom: 20px;" v-if="Object.keys(dayServiceStats).length > 0">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务类型统计</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
+            <div v-for="(count, type) in dayServiceStats" :key="type" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+              <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ type }}</span>
+              <span style="font-size: 14px; color: #4b5563;">{{ count }} 次</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 美发师统计 -->
+        <div v-if="Object.keys(dayHairstylistStats).length > 0">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">美发师统计</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
+            <div v-for="(count, name) in dayHairstylistStats" :key="name" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+              <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ name }}</span>
+              <span style="font-size: 14px; color: #4b5563;">{{ count }} 次</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- 统计卡片 -->
-      <div class="grid grid-cols-2 gap-30rpx mb-30rpx">
-        <div class="bg-white rounded-20rpx p-30rpx shadow-sm text-center">
-          <div class="text-56rpx font-bold text-green-500">{{ monthStats.rechargeCount }}</div>
-          <div class="text-26rpx text-gray-500 mt-10rpx">充值次数</div>
+      <!-- 月报 -->
+      <div v-if="activeTab === 'month'">
+        <!-- 月份选择 -->
+        <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;" @click="showMonthPicker = true">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 14px; font-weight: 500; color: #1f2937;">月份</span>
+            <span style="font-size: 14px; color: #4b5563;">{{ formatMonth(selectedMonth) }}</span>
+          </div>
         </div>
-        <div class="bg-white rounded-20rpx p-30rpx shadow-sm text-center">
-          <div class="text-56rpx font-bold text-blue-500">¥{{ monthStats.rechargeAmount }}</div>
-          <div class="text-26rpx text-gray-500 mt-10rpx">充值金额</div>
-        </div>
-        <div class="bg-white rounded-20rpx p-30rpx shadow-sm text-center">
-          <div class="text-56rpx font-bold text-orange-500">{{ monthStats.consumptionCount }}</div>
-          <div class="text-26rpx text-gray-500 mt-10rpx">消费次数</div>
-        </div>
-      </div>
 
-      <!-- 服务类型统计 -->
-      <div class="bg-white rounded-20rpx shadow-sm overflow-hidden mb-30rpx" v-if="Object.keys(monthServiceStats).length > 0">
-        <wd-cell-group title="服务类型统计">
-          <wd-cell v-for="(count, type) in monthServiceStats" :key="type" :title="type" :value="`${count} 次`"></wd-cell>
-        </wd-cell-group>
-      </div>
+        <!-- 统计卡片 -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">{{ monthStats.rechargeCount }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">充值次数</div>
+          </div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">¥{{ monthStats.rechargeAmount }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">充值金额</div>
+          </div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">{{ monthStats.consumptionCount }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">消费次数</div>
+          </div>
+        </div>
 
-      <!-- 美发师统计 -->
-      <div class="bg-white rounded-20rpx shadow-sm overflow-hidden" v-if="Object.keys(monthHairstylistStats).length > 0">
-        <wd-cell-group title="美发师统计">
-          <wd-cell v-for="(count, name) in monthHairstylistStats" :key="name" :title="name" :value="`${count} 次`"></wd-cell>
-        </wd-cell-group>
+        <!-- 服务类型统计 -->
+        <div style="margin-bottom: 20px;" v-if="Object.keys(monthServiceStats).length > 0">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务类型统计</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
+            <div v-for="(count, type) in monthServiceStats" :key="type" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+              <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ type }}</span>
+              <span style="font-size: 14px; color: #4b5563;">{{ count }} 次</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 美发师统计 -->
+        <div v-if="Object.keys(monthHairstylistStats).length > 0">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">美发师统计</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
+            <div v-for="(count, name) in monthHairstylistStats" :key="name" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+              <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ name }}</span>
+              <span style="font-size: 14px; color: #4b5563;">{{ count }} 次</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- 日期选择弹窗 -->
+    <div v-if="showDatePicker" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: flex-end;" @click.self="showDatePicker = false">
+      <div style="background-color: white; width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+          <button style="color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer;" @click="showDatePicker = false">取消</button>
+          <span style="font-weight: 500; color: #1f2937;">选择日期</span>
+          <button style="color: #0d9488; font-size: 14px; font-weight: 500; background: none; border: none; cursor: pointer;" @click="confirmDate">确定</button>
+        </div>
+        <div style="padding: 20px;">
+          <input
+            type="date"
+            v-model="dateInputValue"
+            style="width: 100%; height: 48px; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 16px; box-sizing: border-box;"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- 月份选择弹窗 -->
+    <div v-if="showMonthPicker" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: flex-end;" @click.self="showMonthPicker = false">
+      <div style="background-color: white; width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+          <button style="color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer;" @click="showMonthPicker = false">取消</button>
+          <span style="font-weight: 500; color: #1f2937;">选择月份</span>
+          <button style="color: #0d9488; font-size: 14px; font-weight: 500; background: none; border: none; cursor: pointer;" @click="confirmMonth">确定</button>
+        </div>
+        <div style="padding: 20px;">
+          <input
+            type="month"
+            v-model="monthInputValue"
+            style="width: 100%; height: 48px; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 16px; box-sizing: border-box;"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <BottomNavigation activeTab="home" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import BottomNavigation from '@/components/BottomNavigation.vue'
 import { rechargeService } from '@/services/rechargeService'
 import { consumptionService } from '@/services/consumptionService'
 
@@ -114,6 +180,16 @@ const activeTab = ref('day')
 const now = new Date()
 const selectedDate = ref(now.getTime())
 const selectedMonth = ref(now.getTime())
+const showDatePicker = ref(false)
+const showMonthPicker = ref(false)
+
+const dateInputValue = ref('')
+const monthInputValue = ref('')
+
+const tabs = [
+  { id: 'day', name: '日报' },
+  { id: 'month', name: '月报' }
+]
 
 const dayStats = computed(() => {
   const date = new Date(selectedDate.value)
@@ -186,4 +262,30 @@ function formatMonth(timestamp: number): string {
   const date = new Date(timestamp)
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
 }
+
+function confirmDate() {
+  if (dateInputValue.value) {
+    selectedDate.value = new Date(dateInputValue.value).getTime()
+  }
+  showDatePicker.value = false
+}
+
+function confirmMonth() {
+  if (monthInputValue.value) {
+    const [year, month] = monthInputValue.value.split('-')
+    selectedMonth.value = new Date(parseInt(year), parseInt(month) - 1).getTime()
+  }
+  showMonthPicker.value = false
+}
+
+onMounted(() => {
+  const date = new Date(selectedDate.value)
+  dateInputValue.value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+
+  const monthDate = new Date(selectedMonth.value)
+  monthInputValue.value = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, '0')}`
+})
 </script>
+
+<style>
+</style>

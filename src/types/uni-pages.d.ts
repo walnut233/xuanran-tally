@@ -5,20 +5,29 @@
 
 interface NavigateToOptions {
   url: "/pages/index/index" |
+       "/pages/consumption/index" |
        "/pages/customDemo/index" |
        "/pages/echartsDemo/index" |
+       "/pages/hairstylist/list" |
        "/pages/i18nDemo/index" |
        "/pages/layoutDemo/index" |
+       "/pages/member/detail" |
+       "/pages/member/edit" |
+       "/pages/member/list" |
        "/pages/piniaDemo/index" |
        "/pages/queryDemo/loginDemo" |
        "/pages/queryDemo/queryTestDemo" |
        "/pages/queryDemo/useRequestDemo" |
        "/pages/queryDemo/zPagingDemo" |
+       "/pages/recharge/index" |
+       "/pages/report/index" |
        "/pages/routerDemo/index" |
        "/pages/routerDemo/login" |
        "/pages/routerDemo/page1" |
        "/pages/routerDemo/page2" |
        "/pages/routerDemo/page3" |
+       "/pages/serviceType/list" |
+       "/pages/settings/index" |
        "/pages/unocssDemo/index" |
        "/pages/wotUiDemo/index" |
        "/pages-sub/subDemo/index" |
@@ -27,7 +36,7 @@ interface NavigateToOptions {
 interface RedirectToOptions extends NavigateToOptions {}
 
 interface SwitchTabOptions {
-  
+  url: "/pages/index/index" | "/pages/member/list" | "/pages/recharge/index" | "/pages/consumption/index"
 }
 
 type ReLaunchOptions = NavigateToOptions | SwitchTabOptions;

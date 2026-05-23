@@ -1,7 +1,7 @@
 {
-    "name" : "uni-plus",
+    "name" : "渲染造型",
     "appid" : "__UNI__42E0EC3",
-    "description" : "uni-plus app 打包",
+    "description" : "渲染造型记账软件",
     "versionName" : "1.0.1",
     "versionCode" : 101,
     /* 5+App特有相关 */
@@ -15,9 +15,12 @@
             "autoclose" : true
         },
         /* 模块配置 */
-        "modules" : {},
+        "modules" : {
+            "SQLite" : {}
+        },
         "darkmode" : true, // 开启支持深色模式
         "themeLocation" : "theme.json", // 深色模式JSON文件，如果 theme.json 在根目录可省略
+
         /* 应用发布信息 */
         "distribute" : {
             /* android打包配置 */
@@ -96,5 +99,6 @@
         "router" : {
             "base" : "/uni-plus/"
         }
-    }
+    },
+    "fallbackLocale" : "zh-Hans"
 }

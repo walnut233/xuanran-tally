@@ -1,85 +1,207 @@
 <route lang="json5">
 {
-  layout: 'default',
+  layout: "default",
   style: {
-    navigationBarTitleText: '会员详情'
+    navigationStyle: "custom"
   }
 }
 </route>
 
 <template>
-  <div class="min-h-100vh bg-gray-100" v-if="member">
-    <!-- 会员信息卡片 -->
-    <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-30rpx">
-      <div class="flex items-center">
-        <div class="w-120rpx h-120rpx bg-white/20 rounded-full flex items-center justify-center text-50rpx text-white">
-          {{ member.name.charAt(0) }}
-        </div>
-        <div class="ml-30rpx text-white">
-          <div class="text-40rpx font-bold">{{ member.name }}</div>
-          <div class="text-28rpx text-blue-100 mt-10rpx">{{ member.phone }}</div>
-        </div>
-      </div>
-      <div class="mt-40rpx flex justify-around">
-        <div class="text-center">
-          <div class="text-56rpx font-bold text-white">{{ member.remainingHaircuts }}</div>
-          <div class="text-26rpx text-blue-100 mt-10rpx">剩余次数</div>
-        </div>
+  <div style="min-height: 100vh; background-color: #f9fafb;">
+    <!-- Custom Header -->
+    <div style="position: sticky; top: 0; z-index: 40;">
+      <div style="height: 32px; background-color: transparent;"></div>
+      <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 16px; display: flex; align-items: center; background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);">
+        <button style="width: 40px; height: 40px; background-color: #f9fafb; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0;" @click="goBack">
+          <span style="font-size: 24px; font-weight: bold; color: #374151; line-height: 1;">‹</span>
+        </button>
+        <h1 style="flex: 1; text-align: center; font-size: 16px; font-weight: 600; color: #1f2937; margin: 0;">会员详情</h1>
+        <button style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #0d9488; background: transparent; border: none; cursor: pointer; flex-shrink: 0;">
+          <span style="font-size: 20px;">✏️</span>
+        </button>
       </div>
     </div>
 
-    <!-- 基本信息 -->
-    <div class="p-30rpx">
-      <div class="bg-white rounded-20rpx shadow-sm overflow-hidden">
-        <wd-cell-group>
-          <wd-cell title="性别" :value="member.gender || '-'"></wd-cell>
-          <wd-cell title="生日" :value="member.birthday || '-'"></wd-cell>
-          <wd-cell title="开卡时间" :value="formatDate(member.createDate)"></wd-cell>
-          <wd-cell title="备注" :value="member.remark || '-'"></wd-cell>
-        </wd-cell-group>
+    <!-- Content -->
+    <div style="padding: 0 20px; padding-top: 8px; padding-bottom: 96px;" v-if="member">
+      <!-- Member Header Card -->
+      <div style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); padding: 24px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+          <div style="width: 72px; height: 72px; background-color: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 600; color: white;">
+            {{ member.name.charAt(0) }}
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 20px; font-weight: 700; color: white; margin-bottom: 4px;">{{ member.name }}</div>
+            <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin-bottom: 4px;">{{ member.phone }}</div>
+            <div style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">{{ member.createDate ? new Date(member.createDate).toLocaleDateString() + ' 开卡' : '' }}</div>
+          </div>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.15); padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin-bottom: 4px;">剩余剪发次数</div>
+            <div style="font-size: 30px; font-weight: 700; color: white;">{{ member.remainingHaircuts }} <span style="font-size: 16px; font-weight: 500;">次</span></div>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button
+              style="height: 48px; padding: 0 20px; background-color: white; color: #0d9488; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; border: none; cursor: pointer;"
+              @click="goToRecharge"
+            >
+              <span style="font-size: 18px;">💰</span>
+              充值
+            </button>
+            <button
+              style="height: 48px; padding: 0 20px; background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;"
+              @click="goToConsume"
+            >
+              <span style="font-size: 18px;">🎫</span>
+              消费
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- 操作按钮 -->
-    <div class="p-x-30rpx mt-30rpx flex space-x-20rpx">
-      <wd-button type="primary" block size="large" @click="goToRecharge">
-        充值
-      </wd-button>
-      <wd-button type="warning" block size="large" @click="goToConsumption">
-        消费
-      </wd-button>
+      <!-- Member Info -->
+      <div style="margin-bottom: 20px;">
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">基本信息</div>
+        <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
+          <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+            <span style="width: 88px; font-size: 14px; color: #6b7280;">姓名</span>
+            <span style="flex: 1; font-size: 14px; font-weight: 500; color: #1f2937;">{{ member.name }}</span>
+          </div>
+          <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+            <span style="width: 88px; font-size: 14px; color: #6b7280;">手机号</span>
+            <span style="flex: 1; font-size: 14px; font-weight: 500; color: #1f2937;">{{ member.phone }}</span>
+          </div>
+          <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+            <span style="width: 88px; font-size: 14px; color: #6b7280;">性别</span>
+            <span style="flex: 1; font-size: 14px; font-weight: 500; color: #1f2937;">{{ member.gender || '-' }}</span>
+          </div>
+          <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+            <span style="width: 88px; font-size: 14px; color: #6b7280;">生日</span>
+            <span style="flex: 1; font-size: 14px; font-weight: 500; color: #1f2937;">{{ member.birthday || '-' }}</span>
+          </div>
+          <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px;">
+            <span style="width: 88px; font-size: 14px; color: #6b7280;">备注</span>
+            <span style="flex: 1; font-size: 14px; font-weight: 500; color: #1f2937;">{{ member.remark || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Records -->
+      <div style="margin-bottom: 20px;">
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">历史记录</div>
+        <div style="display: flex; gap: 6px; background-color: #f9fafb; padding: 6px; margin-bottom: 12px;">
+          <button
+            v-for="tab in historyTabs"
+            :key="tab.id"
+            style="flex: 1; padding: 10px 0; font-size: 14px; font-weight: 500; border: none; cursor: pointer;"
+            :style="activeTab === tab.id ? 'background-color: white; color: #1f2937;' : 'background-color: transparent; color: #6b7280;'"
+            @click="activeTab = tab.id"
+          >
+            {{ tab.name }}
+          </button>
+        </div>
+
+        <div v-if="filteredHistory.length > 0" style="display: flex; flex-direction: column; gap: 10px;">
+          <div
+            v-for="item in filteredHistory"
+            :key="item.id"
+            style="background-color: white; padding: 16px; display: flex; align-items: center; gap: 12px; border: 1px solid #f3f4f6;"
+          >
+            <div
+              style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"
+              :style="item.type === 'recharge' ? 'background-color: #ccfbf1; color: #0d9488;' : 'background-color: #dbeafe; color: #2563eb;'"
+            >
+              <span v-if="item.type === 'recharge'" style="font-size: 18px;">💰</span>
+              <span v-else style="font-size: 18px;">🎫</span>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 14px; font-weight: 500; color: #1f2937; margin-bottom: 2px;">{{ item.title }}</div>
+              <div style="font-size: 12px; color: #6b7280;">{{ item.detail }}</div>
+            </div>
+            <div
+              style="font-size: 14px; font-weight: 700;"
+              :style="item.type === 'recharge' ? 'color: #0d9488;' : 'color: #ef4444;'"
+            >
+              {{ item.amount }}
+            </div>
+          </div>
+        </div>
+
+        <div v-else style="text-align: center; padding: 64px 0; color: #9ca3af;">
+          暂无记录
+        </div>
+      </div>
+
+      <!-- Delete Button -->
+      <div style="margin-top: 8px;">
+        <button style="width: 100%; height: 52px; background-color: white; border: 1px solid #ef4444; color: #ef4444; font-size: 16px; font-weight: 600; cursor: pointer;">
+          删除会员
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onLoad } from 'vue'
-import type { Member } from '@/types'
-import { memberService } from '@/services/memberService'
-import { navigateTo } from '@/utils/router'
+import { ref, computed } from "vue";
+import { memberService } from "@/services/memberService";
+import type { Member } from "@/types";
 
-const member = ref<Member | null>(null)
+const memberId = ref<string>();
+const member = ref<Member>();
+const activeTab = ref("all");
 
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-}
+const historyTabs = [
+  { id: "all", name: "全部" },
+  { id: "recharge", name: "充值" },
+  { id: "consume", name: "消费" },
+];
 
-function goToRecharge() {
+const mockHistory = [
+  { id: 1, type: "recharge", title: "充值", detail: "2024年5月20日 · 现金 · 阿明", amount: "+10 次" },
+  { id: 2, type: "consume", title: "剪发", detail: "2024年5月18日 · 阿明", amount: "-1 次" },
+  { id: 3, type: "consume", title: "剪发", detail: "2024年5月5日 · 阿华", amount: "-1 次" },
+  { id: 4, type: "recharge", title: "充值", detail: "2024年4月15日 · 微信 · 阿明", amount: "+20 次" },
+  { id: 5, type: "consume", title: "染烫", detail: "2024年4月10日 · 阿华", amount: "-2 次" },
+];
+
+const filteredHistory = computed(() => {
+  if (activeTab.value === "all") return mockHistory;
+  return mockHistory.filter((h) => h.type === activeTab.value);
+});
+
+const goBack = () => {
+  uni.navigateBack();
+};
+
+const goToRecharge = () => {
   if (member.value) {
-    navigateTo('/pages/recharge/index', { memberId: member.value.id })
+    uni.navigateTo({
+      url: `/pages/recharge/index?memberId=${member.value.id}`
+    });
   }
-}
+};
 
-function goToConsumption() {
+const goToConsume = () => {
   if (member.value) {
-    navigateTo('/pages/consumption/index', { memberId: member.value.id })
+    uni.navigateTo({
+      url: `/pages/consumption/index?memberId=${member.value.id}`
+    });
   }
-}
+};
 
 onLoad((options: any) => {
-  if (options.id) {
-    member.value = memberService.getById(options.id) || null
+  memberId.value = options.id;
+});
+
+onShow(() => {
+  if (memberId.value) {
+    member.value = memberService.getById(memberId.value);
   }
-})
+});
 </script>
+
+<style>
+</style>

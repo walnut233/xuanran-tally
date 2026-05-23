@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>添加会员 - 理发店记卡系统</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: oklch(98% 0.004 240);
+      --surface: oklch(100% 0 0);
+      --fg: oklch(20% 0.02 240);
+      --muted: oklch(50% 0.018 240);
+      --border: oklch(90% 0.006 240);
+      --accent: oklch(56% 0.12 170);
+      --accent-light: oklch(90% 0.04 170);
+      --danger: oklch(60% 0.18 25);
+      --warning: oklch(70% 0.12 85);
+      --success: oklch(58% 0.16 145);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+    }
+    .phone-frame {
+      max-width: 390px;
+      margin: 0 auto;
+      background: var(--surface);
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    .status-bar {
+      height: 32px;
+      background: var(--accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .header {
+      background: var(--surface);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .back-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: var(--border);
+    }
+    .back-btn svg, .date-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      flex: 1;
+    }
+    .content {
+      padding: 20px;
+      padding-bottom: 120px;
+    }
+    .form-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .form-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+    .form-item:last-child {
+      border-bottom: none;
+    }
+    .form-label {
+      width: 80px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--fg);
+      flex-shrink: 0;
+    }
+    .form-label.required::after {
+      content: '*';
+      color: var(--danger);
+      margin-left: 2px;
+    }
+    .form-input {
+      flex: 1;
+      height: 40px;
+      font-size: 15px;
+      border: none;
+      background: transparent;
+      outline: none;
+      color: var(--fg);
+    }
+    .form-input::placeholder {
+      color: var(--muted);
+    }
+    .form-input:focus {
+      color: var(--accent);
+    }
+    .gender-selector {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+    }
+    .gender-option {
+      flex: 1;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+      color: var(--muted);
+    }
+    .gender-option:hover {
+      border-color: var(--accent);
+    }
+    .gender-option.active {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .date-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 0 12px;
+      height: 40px;
+    }
+    .date-text {
+      font-size: 15px;
+      color: var(--fg);
+    }
+    .date-text.placeholder {
+      color: var(--muted);
+    }
+    .date-icon {
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .form-remark {
+      flex: 1;
+      min-height: 80px;
+      font-size: 15px;
+      border: none;
+      background: transparent;
+      outline: none;
+      color: var(--fg);
+      resize: none;
+      padding: 8px 0;
+    }
+    .form-remark::placeholder {
+      color: var(--muted);
+    }
+    .section-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      margin-top: 24px;
+    }
+    .section-header:first-child {
+      margin-top: 0;
+    }
+    .hint-text {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 8px 20px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+    .bottom-actions {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 390px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .btn {
+      width: 100%;
+      height: 52px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, oklch(62% 0.14 170) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(86, 184, 158, 0.3);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 16px rgba(86, 184, 158, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>09:41</span>
+      <span>📶 🔋</span>
+    </div>
+
+    <div class="header">
+      <div class="back-btn" onclick="location.href='02-members.html'">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </div>
+      <div class="header-title">添加会员</div>
+    </div>
+
+    <div class="content">
+      <div class="section-header">基本信息</div>
+      <div class="form-section">
+        <div class="form-item">
+          <span class="form-label required">姓名</span>
+          <input class="form-input" id="nameInput" placeholder="请输入会员姓名">
+        </div>
+        <div class="form-item">
+          <span class="form-label required">手机号</span>
+          <input class="form-input" id="phoneInput" placeholder="请输入手机号" type="tel" maxlength="11">
+        </div>
+        <div class="form-item">
+          <span class="form-label">性别</span>
+          <div class="gender-selector">
+            <div class="gender-option" data-gender="male">男</div>
+            <div class="gender-option" data-gender="female">女</div>
+            <div class="gender-option" data-gender="other">保密</div>
+          </div>
+        </div>
+        <div class="form-item">
+          <span class="form-label">生日</span>
+          <div class="date-input-wrapper" id="birthdayPicker">
+            <span class="date-text placeholder" id="birthdayText">选择生日</span>
+            <span class="date-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">账户信息</div>
+      <div class="form-section">
+        <div class="form-item">
+          <span class="form-label required">初始次数</span>
+          <input class="form-input" id="countInput" placeholder="请输入初始剪发次数" type="number" min="0">
+        </div>
+        <div class="hint-text">开卡时赠送或充值的剪发次数</div>
+      </div>
+
+      <div class="section-header">备注</div>
+      <div class="form-section">
+        <div class="form-item" style="align-items: flex-start;">
+          <span class="form-label" style="padding-top: 8px;">备注</span>
+          <textarea class="form-remark" placeholder="添加备注信息（选填）"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="btn btn-primary" onclick="saveMember()">
+        保存会员
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 性别选择
+    document.querySelectorAll('.gender-option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.gender-option').forEach(o => o.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // 生日选择器模拟
+    document.getElementById('birthdayPicker').addEventListener('click', function() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+
+      // 模拟选择生日为今天
+      const birthdayText = document.getElementById('birthdayText');
+      birthdayText.textContent = `${year}-${month}-${day}`;
+      birthdayText.classList.remove('placeholder');
+    });
+
+    // 保存会员
+    function saveMember() {
+      const name = document.getElementById('nameInput').value;
+      const phone = document.getElementById('phoneInput').value;
+      const count = document.getElementById('countInput').value;
+
+      if (!name || !phone || !count) {
+        alert('请填写必填项！');
+        return;
+      }
+
+      if (phone.length !== 11) {
+        alert('请输入正确的手机号！');
+        return;
+      }
+
+      alert('会员添加成功！');
+      location.href = '02-members.html';
+    }
+  </script>
+</body>
+</html>

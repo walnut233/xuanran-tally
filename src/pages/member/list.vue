@@ -1,105 +1,125 @@
 <route lang="json5">
 {
-  layout: 'default',
+  layout: "default",
   style: {
-    navigationBarTitleText: '会员管理'
+    navigationStyle: "custom"
   }
 }
 </route>
 
 <template>
-  <div class="min-h-100vh bg-gray-100">
-    <!-- 搜索栏 -->
-    <div class="bg-white p-30rpx">
-      <wd-search v-model="searchKeyword" placeholder="搜索会员姓名或手机号" />
-    </div>
-
-    <!-- 会员列表 -->
-    <div class="p-30rpx">
-      <div v-if="displayMembers.length === 0" class="text-center py-100rpx text-gray-400">
-        <div class="text-100rpx mb-20rpx">👥</div>
-        <div>暂无会员</div>
+  <div style="min-height: 100vh; background-color: #f9fafb;">
+    <!-- Custom Header -->
+    <div style="background-color: white; border-bottom: 1px solid #f3f4f6; position: sticky; top: 0; z-index: 40;">
+      <!-- Status Bar Spacer -->
+      <div style="height: 32px;"></div>
+      <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 16px;">
+        <h1 style="font-size: 20px; font-weight: 600; color: #1f2937; margin: 0;">会员管理</h1>
       </div>
 
-      <div v-else class="space-y-20rpx">
-        <div
-          v-for="member in displayMembers"
-          :key="member.id"
-          class="bg-white rounded-20rpx p-30rpx shadow-sm"
-          @click="goToDetail(member.id)"
-        >
-          <div class="flex justify-between items-start">
-            <div>
-              <div class="flex items-center">
-                <span class="text-34rpx font-bold text-gray-800">{{ member.name }}</span>
-                <span v-if="member.gender" class="ml-20rpx text-26rpx text-gray-500">
-                  {{ member.gender === '男' ? '♂' : '♀' }}
-                </span>
-              </div>
-              <div class="text-28rpx text-gray-500 mt-10rpx">{{ member.phone }}</div>
-            </div>
-            <div class="text-right">
-              <div class="text-40rpx font-bold text-blue-500">{{ member.remainingHaircuts }}</div>
-              <div class="text-24rpx text-gray-400">剩余次数</div>
-            </div>
-          </div>
-          <div class="mt-20rpx pt-20rpx border-t border-gray-100 flex justify-between items-center">
-            <div class="text-24rpx text-gray-400">
-              开卡时间: {{ formatDate(member.createDate) }}
-            </div>
-            <div class="flex space-x-20rpx">
-              <wd-button size="small" type="primary" plain @click.stop="goToRecharge(member.id)">
-                充值
-              </wd-button>
-              <wd-button size="small" type="warning" plain @click.stop="goToConsumption(member.id)">
-                消费
-              </wd-button>
-            </div>
-          </div>
+      <!-- Search Bar -->
+      <div style="padding: 0 20px; padding-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 12px; background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 12px 16px;">
+          <span style="font-size: 18px; color: #9ca3af;">🔍</span>
+          <input
+            v-model="searchKeyword"
+            style="flex: 1; background-color: transparent; font-size: 14px; outline: none; border: none;"
+            placeholder="搜索姓名或手机号尾号"
+          />
         </div>
       </div>
     </div>
 
-    <!-- 新增按钮 -->
-    <wd-fab>
-      <wd-icon name="add" size="24px"></wd-icon>
-    </wd-fab>
+    <!-- Content -->
+    <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 120px;">
+      <!-- Section Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <span style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em;">全部会员</span>
+        <span style="font-size: 12px; color: #6b7280;">共 {{ members.length }} 人</span>
+      </div>
+
+      <!-- Member List -->
+      <div v-if="displayMembers.length > 0" style="display: flex; flex-direction: column; gap: 10px;">
+        <div
+          v-for="member in displayMembers"
+          :key="member.id"
+          style="background-color: white; padding: 16px; display: flex; align-items: center; gap: 14px; border: 1px solid #f3f4f6;"
+          @click="goToDetail(member.id)"
+        >
+          <div style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; color: white; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); flex-shrink: 0;">
+            {{ member.name.charAt(0) }}
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">{{ member.name }}</div>
+            <div style="font-size: 14px; color: #6b7280;">{{ member.phone }}</div>
+            <div
+              style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin-top: 4px;"
+              :style="member.remainingHaircuts <= 3 ? 'color: #ef4444;' : 'color: #0d9488;'"
+            >
+              剩余 {{ member.remainingHaircuts }} 次
+            </div>
+          </div>
+          <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #9ca3af;">
+            <span style="font-size: 20px; font-weight: bold;">›</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0;">
+        <div style="width: 80px; height: 80px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 16px;">
+          👥
+        </div>
+        <div style="color: #6b7280; font-size: 16px;">暂无会员</div>
+      </div>
+    </div>
+
+    <!-- FAB -->
+    <div style="position: fixed; right: 20px; bottom: 120px; z-index: 50;">
+      <button
+        style="width: 56px; height: 56px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.2); border: none; cursor: pointer;"
+        @click="goToAddMember"
+      >
+        <span style="font-size: 24px; font-weight: bold; line-height: 1;">+</span>
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onShow } from 'vue'
-import { useMemberStore } from '@/store'
-import { navigateTo } from '@/utils/router'
+import { ref, computed } from "vue";
+import { memberService } from "@/services/memberService";
+import type { Member } from "@/types";
 
-const store = useMemberStore()
-const searchKeyword = ref('')
+const searchKeyword = ref("");
+const members = ref<Member[]>([]);
 
 const displayMembers = computed(() => {
   if (!searchKeyword.value) {
-    return store.members
+    return members.value;
   }
-  return store.search(searchKeyword.value)
-})
+  const kw = searchKeyword.value.toLowerCase();
+  return members.value.filter((m) =>
+    m.name.toLowerCase().includes(kw) || m.phone.includes(kw)
+  );
+});
 
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-}
+const goToDetail = (id: string) => {
+  uni.navigateTo({
+    url: `/pages/member/detail?id=${id}`
+  });
+};
 
-function goToDetail(id: string) {
-  navigateTo('/pages/member/detail', { id })
-}
-
-function goToRecharge(memberId: string) {
-  navigateTo('/pages/recharge/index', { memberId })
-}
-
-function goToConsumption(memberId: string) {
-  navigateTo('/pages/consumption/index', { memberId })
-}
+const goToAddMember = () => {
+  uni.navigateTo({
+    url: "/pages/member/edit"
+  });
+};
 
 onShow(() => {
-  store.load()
-})
+  members.value = memberService.getAll();
+});
 </script>
+
+<style>
+</style>

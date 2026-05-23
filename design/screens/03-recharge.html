@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>充值记录 - 理发店记卡系统</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: oklch(98% 0.004 240);
+      --surface: oklch(100% 0 0);
+      --fg: oklch(20% 0.02 240);
+      --muted: oklch(50% 0.018 240);
+      --border: oklch(90% 0.006 240);
+      --accent: oklch(56% 0.12 170);
+      --accent-light: oklch(90% 0.04 170);
+      --success: oklch(58% 0.16 145);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+    }
+    .phone-frame {
+      max-width: 390px;
+      margin: 0 auto;
+      background: var(--surface);
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    .status-bar {
+      height: 32px;
+      background: var(--accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .header {
+      background: var(--surface);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: var(--bg);
+      padding: 4px;
+      border-radius: 10px;
+    }
+    .tab {
+      flex: 1;
+      padding: 8px 16px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab.active {
+      background: white;
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .content {
+      padding: 16px 20px;
+      padding-bottom: 90px;
+    }
+    .quick-select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quick-select:hover {
+      border-color: var(--accent);
+    }
+    .select-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .select-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg);
+      border-radius: 12px;
+    }
+    .select-placeholder {
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    .form-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: block;
+      font-weight: 500;
+    }
+    .form-input {
+      width: 100%;
+      height: 48px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0 16px;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .form-input:focus {
+      border-color: var(--accent);
+      background: white;
+    }
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+    .form-row .form-group {
+      flex: 1;
+    }
+    .payment-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .payment-item {
+      padding: 14px 10px;
+      text-align: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .payment-item:hover {
+      border-color: var(--accent);
+    }
+    .payment-item.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    .submit-btn {
+      width: 100%;
+      height: 52px;
+      background: linear-gradient(135deg, var(--accent) 0%, oklch(62% 0.14 170) 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(86, 184, 158, 0.3);
+    }
+    .submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(86, 184, 158, 0.4);
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .record-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .record-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .record-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .record-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .record-amount {
+      font-weight: 700;
+      color: var(--success);
+      font-size: 16px;
+    }
+    .record-detail {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 390px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .nav-item.active, .nav-item:hover {
+      color: var(--accent);
+    }
+    .nav-item.active {
+      background: var(--accent-light);
+      border-radius: 12px;
+      padding: 8px 12px;
+    }
+    .nav-item.active .nav-icon {
+      transform: scale(1.1);
+    }
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .nav-label {
+      font-size: 11px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>09:41</span>
+      <span>📶 🔋</span>
+    </div>
+
+    <div class="header">
+      <div class="header-title">充值记录</div>
+      <div class="tabs">
+        <div class="tab active">快速充值</div>
+        <div class="tab">充值历史</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="quick-select">
+        <div class="select-label">选择会员</div>
+        <div class="select-field">
+          <span class="select-placeholder">点击选择或搜索会员</span>
+          <span>›</span>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label">充值次数</label>
+          <input class="form-input" type="number" placeholder="请输入次数">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">充值金额（元）</label>
+            <input class="form-input" type="number" placeholder="用于报表统计">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">支付方式</label>
+          <div class="payment-grid">
+            <div class="payment-item active">现金</div>
+            <div class="payment-item">微信</div>
+            <div class="payment-item">支付宝</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">备注（可选）</label>
+          <input class="form-input" placeholder="填写备注信息">
+        </div>
+      </div>
+
+      <button class="submit-btn">确认充值</button>
+
+      <div class="section-title">今日充值</div>
+      <div class="record-list">
+        <div class="record-item">
+          <div class="record-header">
+            <span class="record-name">张三</span>
+            <span class="record-amount">+10 次</span>
+          </div>
+          <div class="record-detail">
+            <span>现金 · ¥200</span>
+            <span>09:15</span>
+          </div>
+        </div>
+        <div class="record-item">
+          <div class="record-header">
+            <span class="record-name">李四</span>
+            <span class="record-amount">+20 次</span>
+          </div>
+          <div class="record-detail">
+            <span>微信 · ¥380</span>
+            <span>昨天</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <a href="01-home.html" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </span>
+        <span class="nav-label">首页</span>
+      </a>
+      <a href="02-members.html" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </span>
+        <span class="nav-label">会员</span>
+      </a>
+      <a href="03-recharge.html" class="nav-item active">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+        </span>
+        <span class="nav-label">充值</span>
+      </a>
+      <a href="04-consume.html" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M14.5 2c.5 0 1 .2 1.4.6L20.4 7c.8.8.8 2 0 2.8L14 16.3l-1-1-6-6c-.8-.8-.8-2 0-2.8l2.1-2.1c.4-.4.9-.6 1.4-.6h5.5zM16 7c.6 0 1-.4 1-1s-.4-1-1-1-1 .4-1 1 .4 1 1 1z"></path>
+            <line x1="4.5" y1="16" x2="2.5" y2="21.5"></line>
+            <line x1="10" y1="17.5" x2="7" y2="21.5"></line>
+          </svg>
+        </span>
+        <span class="nav-label">消费</span>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

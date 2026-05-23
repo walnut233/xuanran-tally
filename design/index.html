@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>理发店计费记卡系统 - 原型预览</title>
+  <style>
+    :root {
+      --bg: oklch(98% 0.004 240);
+      --surface: oklch(100% 0 0);
+      --fg: oklch(20% 0.02 240);
+      --muted: oklch(50% 0.018 240);
+      --border: oklch(90% 0.006 240);
+      --accent: oklch(56% 0.12 170);
+      --accent-light: oklch(90% 0.04 170);
+
+      --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--accent) 0%, oklch(62% 0.14 170) 100%);
+      color: white;
+      padding: 32px 24px;
+    }
+
+    .header h1 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 15px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .screen-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .screen-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px rgba(86, 184, 158, 0.12);
+      border-color: var(--accent);
+    }
+
+    .screen-frame {
+      aspect-ratio: 412 / 900;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      transform: scale(1);
+      transform-origin: top left;
+    }
+
+    .screen-info {
+      padding: 18px;
+    }
+
+    .screen-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .screen-desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 100px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container" style="padding: 0 24px;">
+      <h1>理发店计费记卡系统</h1>
+      <p>Android应用原型 · 优化界面版本</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="subtitle">应用页面</div>
+    <div class="screen-grid">
+      <div class="screen-card" onclick="window.open('screens/01-home.html', '_blank')">
+        <div class="screen-frame">
+          <iframe src="screens/01-home.html" loading="lazy"></iframe>
+        </div>
+        <div class="screen-info">
+          <span class="tag">首页</span>
+          <div class="screen-title">首页 / 导航</div>
+          <div class="screen-desc">快速入口、报表Tab、今日概览</div>
+        </div>
+      </div>
+
+      <div class="screen-card" onclick="window.open('screens/02-members.html', '_blank')">
+        <div class="screen-frame">
+          <iframe src="screens/02-members.html" loading="lazy"></iframe>
+        </div>
+        <div class="screen-info">
+          <span class="tag">会员</span>
+          <div class="screen-title">会员管理</div>
+          <div class="screen-desc">会员列表、搜索、新增</div>
+        </div>
+      </div>
+
+      <div class="screen-card" onclick="window.open('screens/07-member-detail.html', '_blank')">
+        <div class="screen-frame">
+          <iframe src="screens/07-member-detail.html" loading="lazy"></iframe>
+        </div>
+        <div class="screen-info">
+          <span class="tag">详情</span>
+          <div class="screen-title">会员详情</div>
+          <div class="screen-desc">会员信息、剩余次数、历史记录</div>
+        </div>
+      </div>
+
+      <div class="screen-card" onclick="window.open('screens/03-recharge.html', '_blank')">
+        <div class="screen-frame">
+          <iframe src="screens/03-recharge.html" loading="lazy"></iframe>
+        </div>
+        <div class="screen-info">
+          <span class="tag">充值</span>
+          <div class="screen-title">充值记录</div>
+          <div class="screen-desc">快速充值、支付选择</div>
+        </div>
+      </div>
+
+      <div class="screen-card" onclick="window.open('screens/04-consume.html', '_blank')">
+        <div class="screen-frame">
+          <iframe src="screens/04-consume.html" loading="lazy"></iframe>
+        </div>
+        <div class="screen-info">
+          <span class="tag">消费</span>
+          <div class="screen-title">消费记账</div>
+          <div class="screen-desc">服务选择、发型师、记账</div>
+        </div>
+      </div>
+
+      <div class="screen-card" onclick="window.open('screens/06-settings.html', '_blank')">
+        <div class="screen-frame">
+          <iframe src="screens/06-settings.html" loading="lazy"></iframe>
+        </div>
+        <div class="screen-info">
+          <span class="tag">设置</span>
+          <div class="screen-title">系统设置</div>
+          <div class="screen-desc">首页右上角进入 · 全屏模式</div>
+        </div>
+      </div>
+
+      <div class="screen-card" onclick="window.open('screens/08-add-member.html', '_blank')">
+        <div class="screen-frame">
+          <iframe src="screens/08-add-member.html" loading="lazy"></iframe>
+        </div>
+        <div class="screen-info">
+          <span class="tag">新增</span>
+          <div class="screen-title">添加会员</div>
+          <div class="screen-desc">会员表单、必填项验证</div>
+        </div>
+      </div>
+
+      <div class="screen-card" onclick="window.open('icons.html', '_blank')">
+        <div class="screen-frame" style="aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, oklch(98% 0.002 240) 0%, oklch(100% 0 0) 100%);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 48px; height: 48px; opacity: 0.6;">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          </svg>
+        </div>
+        <div class="screen-info">
+          <span class="tag">资源</span>
+          <div class="screen-title">图标库</div>
+          <div class="screen-desc">JPG下载 · Base64编码 · 多尺寸预览</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -8,24 +8,6 @@
 - **技术栈**: uni-app + Vue3 + TypeScript + Vite + Pinia + Unocss + WotUi
 - **目标平台**: Android（优先），后续可扩展 iOS 和小程序
 - **数据存储**: 本地 SQLite / Local Storage
-- **开发进度**: ~25%（UI框架已基本完成，业务逻辑待实现）
-
-## 当前状态 (2026-05-23)
-
-### ✅ 已完成
-- 项目基础框架搭建（uni-plus）
-- 底部导航栏配置与图标（首页、会员、充值、消费）
-- 所有业务页面的UI框架
-- TypeScript 类型定义
-- Services 层骨架文件
-
-### ❌ 待完成
-- 数据库层实现
-- 所有业务逻辑实现
-- 数据持久化
-- 报表统计功能
-
----
 
 ## 核心领域概念
 
@@ -86,8 +68,6 @@
 - `id`: 美发师ID
 - `name`: 姓名
 
----
-
 ## 业务流程
 
 ### 会员建档流程
@@ -114,8 +94,6 @@
 5. 确认消费，扣减会员剩余剪发次数
 6. 生成消费记录
 
----
-
 ## 数据模型关系
 
 ```
@@ -123,8 +101,6 @@ Member (1) ──→ (N) Recharge
 Member (1) ──→ (N) Consumption
 Consumption (N) ──→ (1) Hairstylist
 ```
-
----
 
 ## 核心业务规则
 
@@ -135,68 +111,34 @@ Consumption (N) ──→ (1) Hairstylist
 5. **时间记录**: 充值和消费时间自动记录
 6. **数据安全**: 本地数据需支持备份
 
----
-
 ## 技术约定
 
 ### 目录结构
 
 ```
 src/
-├── pages/           # 页面视图（实际使用这个）
+├── views/           # 页面视图
 ├── components/      # 公共组件
 ├── stores/          # Pinia 状态管理
 ├── services/        # 业务逻辑服务
 ├── utils/           # 工具函数
 ├── types/           # TypeScript 类型定义
-└── static/          # 静态资源
+└── assets/          # 静态资源
 ```
 
 ### 命名约定
 
-- 页面文件: 小写，如 `list.vue`，按目录组织
+- 页面文件: 小写驼峰，如 `memberList.vue`
 - 组件文件: 大驼峰，如 `MemberCard.vue`
 - 类型定义: 大驼峰，如 `interface Member`
 - Store: 小写驼峰 + `Store`，如 `useMemberStore`
 
 ### UI 配色
 
-- 主色调: #0d9488（青绿色）
-- 辅助色: #14b8a6（浅青绿色）
-- 警示色: #ef4444（红色）
-- 背景色: #f9fafb（浅灰色）
-
-### 配置文件注意事项
-
-⚠️ **重要**:
-- **不要手动编辑**: `src/pages.json` - 由插件自动生成
-- **正确配置文件**: `pages.config.ts` - 用于全局配置和 tabBar
-- **单页面配置**: 在各 `.vue` 文件的 `<route>` 块中配置
-
-### 底部导航栏
-
-已配置 4 个 tab:
-1. 首页 - /pages/index/index
-2. 会员 - /pages/member/list
-3. 充值 - /pages/recharge/index
-4. 消费 - /pages/consumption/index
-
-图标位置: `src/static/tabbar/` (PNG 格式)
-
-### 现有页面列表
-
-| 页面 | 路径 | 状态 |
-|------|------|------|
-| 首页 | /pages/index/index | ✅ UI完成 |
-| 会员列表 | /pages/member/list | ✅ UI完成 |
-| 会员详情 | /pages/member/detail | 有页面 |
-| 会员编辑 | /pages/member/edit | 有页面 |
-| 充值 | /pages/recharge/index | 有页面 |
-| 消费 | /pages/consumption/index | 有页面 |
-| 报表 | /pages/report/index | 有页面 |
-| 服务类型 | /pages/serviceType/list | 有页面 |
-| 美发师 | /pages/hairstylist/list | 有页面 |
-| 设置 | /pages/settings/index | 有页面 |
+- 主色调: #409EFF（蓝色）
+- 辅助色: #67C23A（绿色）
+- 警示色: #F56C6C（红色）
+- 背景色: #F5F7FA（浅灰色）
 
 ### 开发流程约定
 
@@ -205,11 +147,8 @@ src/
 3. **单功能提交**: 开发完单个功能后，立即提交 git  commit，保持提交粒度适中
 4. **提交信息**: 使用规范的 commit message，格式：`emoji type: 描述信息`
 
----
-
 ## 参考文档
 
 - [项目设计文档](./CLAUDE.md)
 - [uni-plus 文档](https://damaicoding.github.io/uni-plus-doc/)
 - [uni-app 官方文档](https://uniapp.dcloud.net.cn/)
-

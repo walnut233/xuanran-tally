@@ -2,186 +2,338 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '消费'
+    navigationStyle: 'custom'
   }
 }
 </route>
 
 <template>
-  <div class="min-h-100vh bg-gray-100">
-    <!-- 选择会员 -->
-    <div class="p-30rpx" v-if="!selectedMember">
-      <div class="text-32rpx font-bold text-gray-800 mb-20rpx">选择会员</div>
-      <wd-search v-model="searchKeyword" placeholder="搜索会员姓名或手机号" />
-      <div class="mt-20rpx bg-white rounded-20rpx shadow-sm overflow-hidden" v-if="searchResults.length > 0">
-        <wd-cell-group>
-          <wd-cell
-            v-for="member in searchResults"
-            :key="member.id"
-            :title="member.name"
-            :value="`剩余 ${member.remainingHaircuts} 次`"
-            :label="member.phone"
-            is-link
-            @click="selectMember(member)"
-          />
-        </wd-cell-group>
-      </div>
-      <div v-else-if="searchKeyword" class="text-center py-100rpx text-gray-400">
-        未找到会员
+  <div style="min-height: 100vh; background-color: #f9fafb;">
+    <!-- Custom Header -->
+    <div style="background-color: white; border-bottom: 1px solid #f3f4f6; position: sticky; top: 0; z-index: 40;">
+      <div style="height: 32px;"></div>
+      <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 16px;">
+        <div style="font-size: 20px; font-weight: 600; color: #1f2937; margin-bottom: 12px;">消费记账</div>
+        <div style="display: flex; gap: 6px; background-color: #f9fafb; padding: 6px;">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            style="flex: 1; padding: 10px 0; font-size: 14px; font-weight: 500; border: none; cursor: pointer;"
+            :style="activeTab === tab.id ? 'background-color: white; color: #0d9488;' : 'background-color: transparent; color: #6b7280;'"
+            @click="activeTab = tab.id"
+          >
+            {{ tab.name }}
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- 消费表单 -->
-    <div class="p-30rpx" v-else>
-      <!-- 会员信息 -->
-      <div class="bg-white rounded-20rpx p-30rpx shadow-sm mb-30rpx">
-        <div class="flex justify-between items-center">
-          <div>
-            <div class="text-34rpx font-bold text-gray-800">{{ selectedMember.name }}</div>
-            <div class="text-26rpx text-gray-500 mt-10rpx">{{ selectedMember.phone }}</div>
-          </div>
-          <div class="text-right">
-            <div class="text-44rpx font-bold text-orange-500">{{ selectedMember.remainingHaircuts }}</div>
-            <div class="text-24rpx text-gray-400">剩余次数</div>
+    <!-- Content -->
+    <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 120px;" v-if="activeTab === 'quick'">
+      <!-- 选择会员 -->
+      <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;" @click="showMemberSelector = true">
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">选择会员</div>
+        <div style="display: flex; align-items: center; justify-content: space-between; background-color: #f9fafb; padding: 14px 16px;">
+          <span :style="selectedMember ? 'color: #1f2937;' : 'color: #9ca3af;'">
+            {{ selectedMember ? selectedMember.name : '点击选择或搜索会员' }}
+          </span>
+          <span style="font-size: 20px; font-weight: bold; color: #9ca3af; line-height: 1;">›</span>
+        </div>
+      </div>
+
+      <!-- 会员卡片 -->
+      <div style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); padding: 20px; margin-bottom: 20px;" v-if="selectedMember">
+        <div style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px;">{{ selectedMember.name }}</div>
+        <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px;">
+          剩余 <strong style="font-size: 24px; font-weight: 700;">{{ selectedMember.remainingHaircuts }}</strong> 次
+          <span v-if="selectedMember.remainingHaircuts <= 3" style="color: #fef08a; margin-left: 8px;">(余额不足)</span>
+        </div>
+      </div>
+
+      <!-- 服务类型选择 -->
+      <div style="margin-bottom: 20px;" v-if="selectedMember">
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">选择服务</div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+          <div
+            v-for="service in serviceTypes"
+            :key="service.id"
+            style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; cursor: pointer;"
+            :style="form.serviceType === service.name ? 'border-color: #14b8a6; background-color: #ccfbf1;' : ''"
+            @click="selectService(service)"
+          >
+            <div style="font-weight: 600; color: #1f2937; font-size: 16px; margin-bottom: 4px;">{{ service.name }}</div>
+            <div style="font-size: 14px; color: #6b7280;">-{{ service.defaultHaircuts }} 次</div>
           </div>
         </div>
       </div>
 
-      <!-- 表单 -->
-      <wd-form ref="formRef" :model="form" :rules="rules" label-width="140rpx">
-        <wd-cell-group inset>
-          <wd-form-item label="服务类型" prop="serviceType" required>
-            <wd-picker v-model="form.serviceType" :columns="serviceTypeColumns" title="选择服务类型">
-              <wd-cell :title="form.serviceType || '请选择服务类型'" is-link value=""></wd-cell>
-            </wd-picker>
-          </wd-form-item>
+      <!-- 美发师选择 -->
+      <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;" v-if="selectedMember">
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">发型师</div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div
+            v-for="stylist in hairstylists"
+            :key="stylist.id"
+            style="padding: 10px 18px; background-color: #f9fafb; border: 1px solid #f3f4f6; font-size: 14px; font-weight: 500; cursor: pointer;"
+            :style="form.hairstylist === stylist.name ? 'border-color: #14b8a6; background-color: #ccfbf1; color: #0d9488;' : ''"
+            @click="form.hairstylist = stylist.name"
+          >
+            {{ stylist.name }}
+          </div>
+        </div>
+      </div>
 
-          <wd-form-item label="消费次数" prop="usedHaircuts" required>
-            <wd-input v-model="form.usedHaircuts" type="number" placeholder="请输入消费次数" />
-          </wd-form-item>
+      <!-- 备注 -->
+      <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;" v-if="selectedMember">
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">备注（可选）</div>
+        <input
+          v-model="form.remark"
+          style="width: 100%; height: 48px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 16px; outline: none; box-sizing: border-box;"
+          placeholder="填写备注信息"
+        />
+      </div>
 
-          <wd-form-item label="美发师" prop="hairstylist">
-            <wd-picker v-model="form.hairstylist" :columns="hairstylistColumns" title="选择美发师">
-              <wd-cell :title="form.hairstylist || '请选择美发师'" is-link value=""></wd-cell>
-            </wd-picker>
-          </wd-form-item>
+      <!-- 提交按钮 -->
+      <button
+        style="width: 100%; height: 52px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-size: 16px; font-weight: 600; border: none; cursor: pointer; margin-bottom: 24px;"
+        :style="!canSubmit ? 'opacity: 0.5; cursor: not-allowed;' : ''"
+        :disabled="!canSubmit"
+        @click="handleSubmit"
+        v-if="selectedMember"
+      >
+        确认消费
+      </button>
 
-          <wd-form-item label="备注" prop="remark">
-            <wd-textarea v-model="form.remark" placeholder="请输入备注信息" />
-          </wd-form-item>
-        </wd-cell-group>
-      </wd-form>
+      <!-- 今日消费记录 -->
+      <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">今日消费</div>
+      <div style="display: flex; flex-direction: column; gap: 10px;" v-if="todayConsumptions.length > 0">
+        <div
+          v-for="record in todayConsumptions"
+          :key="record.id"
+          style="background-color: white; border: 1px solid #f3f4f6; padding: 16px;"
+        >
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
+            <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-{{ record.usedHaircuts }} 次</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
+            <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
+            <span>{{ formatTime(record.consumeTime) }}</span>
+          </div>
+        </div>
+      </div>
+      <div v-else style="text-align: center; padding: 64px 0; color: #9ca3af;">
+        暂无消费记录
+      </div>
+    </div>
 
-      <div class="mt-50rpx flex space-x-20rpx">
-        <wd-button block size="large" @click="reset">
-          重新选择
-        </wd-button>
-        <wd-button type="primary" block size="large" @click="handleSubmit">
-          确认消费
-        </wd-button>
+    <!-- 消费历史 Tab -->
+    <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 120px;" v-else>
+      <div style="display: flex; flex-direction: column; gap: 10px;" v-if="allConsumptions.length > 0">
+        <div
+          v-for="record in allConsumptions"
+          :key="record.id"
+          style="background-color: white; border: 1px solid #f3f4f6; padding: 16px;"
+        >
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
+            <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-{{ record.usedHaircuts }} 次</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
+            <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
+            <span>{{ formatDate(record.consumeTime) }}</span>
+          </div>
+        </div>
+      </div>
+      <div v-else style="text-align: center; padding: 64px 0; color: #9ca3af;">
+        暂无消费记录
+      </div>
+    </div>
+
+    <!-- 会员选择弹窗 -->
+    <div
+      v-if="showMemberSelector"
+      style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50;"
+      @click.self="showMemberSelector = false"
+    >
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background-color: white; max-height: 70vh; display: flex; flex-direction: column;">
+        <div style="padding: 20px; border-bottom: 1px solid #f3f4f6;">
+          <div style="font-size: 18px; font-weight: 600; color: #1f2937;">选择会员</div>
+        </div>
+        <div style="padding: 16px; border-bottom: 1px solid #f3f4f6;">
+          <div style="display: flex; align-items: center; gap: 12px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 12px 16px;">
+            <span style="font-size: 18px; color: #9ca3af;">🔍</span>
+            <input
+              v-model="memberSearchKeyword"
+              style="flex: 1; background-color: transparent; font-size: 14px; outline: none; border: none;"
+              placeholder="搜索姓名或手机号"
+            />
+          </div>
+        </div>
+        <div style="flex: 1; overflow-y: auto; padding: 16px;">
+          <div style="display: flex; flex-direction: column; gap: 10px;" v-if="filteredMembers.length > 0">
+            <div
+              v-for="member in filteredMembers"
+              :key="member.id"
+              style="background-color: #f9fafb; padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer;"
+              @click="selectMember(member)"
+            >
+              <div style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; color: white; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); flex-shrink: 0;">
+                {{ member.name.charAt(0) }}
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">{{ member.name }}</div>
+                <div style="font-size: 14px; color: #6b7280;">{{ member.phone }}</div>
+                <div
+                  style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin-top: 4px;"
+                  :style="member.remainingHaircuts <= 3 ? 'color: #ef4444;' : 'color: #0d9488;'"
+                >
+                  剩余 {{ member.remainingHaircuts }} 次
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else style="text-align: center; padding: 64px 0; color: #9ca3af;">
+            暂无会员
+          </div>
+        </div>
+        <div style="padding: 16px; border-top: 1px solid #f3f4f6;">
+          <button style="width: 100%; height: 48px; background-color: #f3f4f6; color: #1f2937; font-size: 16px; font-weight: 600; border: none; cursor: pointer;" @click="showMemberSelector = false">
+            取消
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onLoad, onShow } from 'vue'
-import type { FormRulesData } from 'wot-design-uni'
-import type { Member } from '@/types'
+import { ref, computed } from 'vue'
 import { memberService } from '@/services/memberService'
 import { serviceTypeService } from '@/services/serviceTypeService'
 import { hairstylistService } from '@/services/hairstylistService'
 import { consumptionService } from '@/services/consumptionService'
-import { showToast, navigateBack } from '@/utils/router'
+import type { Member, ServiceType, Hairstylist } from '@/types'
 
-const formRef = ref()
-const searchKeyword = ref('')
+const activeTab = ref('quick')
+const showMemberSelector = ref(false)
+const memberSearchKeyword = ref('')
 const selectedMember = ref<Member | null>(null)
 
-const serviceTypes = ref(serviceTypeService.getAll())
-const hairstylists = ref(hairstylistService.getAll())
+const tabs = [
+  { id: 'quick', name: '快速消费' },
+  { id: 'history', name: '消费历史' }
+]
 
-const serviceTypeColumns = computed(() => [serviceTypes.value.map(st => st.name)])
-const hairstylistColumns = computed(() => [hairstylists.value.map(h => h.name)])
+const serviceTypes = ref<ServiceType[]>([])
+const hairstylists = ref<Hairstylist[]>([])
 
-const searchResults = computed(() => {
-  if (!searchKeyword.value) return []
-  return memberService.search(searchKeyword.value)
-})
-
-const form = reactive({
+const form = ref({
   serviceType: '',
-  usedHaircuts: '',
+  usedHaircuts: 1,
   hairstylist: '',
   remark: ''
 })
 
-const rules: FormRulesData = {
-  serviceType: [
-    { required: true, message: '请选择服务类型' }
-  ],
-  usedHaircuts: [
-    { required: true, message: '请输入消费次数' },
-    {
-      validator: (val: string) => {
-        if (!selectedMember.value) return false
-        return Number(val) > 0 && Number(val) <= selectedMember.value.remainingHaircuts
-      },
-      message: '次数必须大于0且不超过剩余次数'
-    }
-  ]
+const canSubmit = computed(() => {
+  return selectedMember.value &&
+    form.value.serviceType &&
+    form.value.usedHaircuts > 0 &&
+    form.value.usedHaircuts <= selectedMember.value.remainingHaircuts
+})
+
+const allMembers = computed(() => memberService.getAll())
+
+const filteredMembers = computed(() => {
+  if (!memberSearchKeyword.value) return allMembers.value
+  const kw = memberSearchKeyword.value.toLowerCase()
+  return allMembers.value.filter((m) =>
+    m.name.toLowerCase().includes(kw) || m.phone.includes(kw)
+  )
+})
+
+const todayConsumptions = computed(() => {
+  const today = new Date().toDateString()
+  return consumptionService.getAll().filter(r => {
+    const consumeDate = new Date(r.consumeTime).toDateString()
+    return consumeDate === today
+  }).reverse()
+})
+
+const allConsumptions = computed(() => {
+  return [...consumptionService.getAll()].reverse()
+})
+
+function getMemberName(memberId: string) {
+  const member = memberService.getById(memberId)
+  return member ? member.name : '未知会员'
+}
+
+function formatTime(timeStr: string) {
+  const time = new Date(timeStr)
+  const today = new Date()
+  if (time.toDateString() === today.toDateString()) {
+    return time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+  }
+  return '昨天'
+}
+
+function formatDate(timeStr: string) {
+  const time = new Date(timeStr)
+  return time.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 function selectMember(member: Member) {
   selectedMember.value = member
+  showMemberSelector.value = false
 }
 
-function reset() {
-  selectedMember.value = null
-  searchKeyword.value = ''
-  Object.assign(form, {
-    serviceType: '',
-    usedHaircuts: '',
-    hairstylist: '',
-    remark: ''
-  })
+function selectService(service: ServiceType) {
+  form.value.serviceType = service.name
+  form.value.usedHaircuts = service.defaultHaircuts
 }
 
 function handleSubmit() {
-  if (!selectedMember.value) return
+  if (!canSubmit.value || !selectedMember.value) return
 
-  formRef.value.validate().then(() => {
-    const result = consumptionService.add({
-      memberId: selectedMember.value.id,
-      serviceType: form.serviceType,
-      usedHaircuts: Number(form.usedHaircuts),
-      hairstylist: form.hairstylist,
-      remark: form.remark
-    })
-
-    if (result === null) {
-      showToast('余额不足')
-      return
-    }
-
-    showToast('消费成功')
-    setTimeout(() => {
-      navigateBack()
-    }, 500)
+  const result = consumptionService.add({
+    memberId: selectedMember.value.id,
+    serviceType: form.value.serviceType,
+    usedHaircuts: form.value.usedHaircuts,
+    hairstylist: form.value.hairstylist,
+    remark: form.value.remark
   })
+
+  if (result === null) {
+    uni.showToast({
+      title: '余额不足',
+      icon: 'none'
+    })
+    return
+  }
+
+  uni.showToast({
+    title: '消费成功',
+    icon: 'success'
+  })
+
+  Object.assign(form.value, {
+    serviceType: '',
+    usedHaircuts: 1,
+    hairstylist: '',
+    remark: ''
+  })
+
+  if (selectedMember.value) {
+    selectedMember.value = memberService.getById(selectedMember.value.id)
+  }
 }
 
 onShow(() => {
   serviceTypes.value = serviceTypeService.getAll()
   hairstylists.value = hairstylistService.getAll()
 })
-
-onLoad((options: any) => {
-  if (options.memberId) {
-    const member = memberService.getById(options.memberId)
-    if (member) {
-      selectedMember.value = member
-    }
-  }
-})
 </script>
+
+<style>
+</style>
