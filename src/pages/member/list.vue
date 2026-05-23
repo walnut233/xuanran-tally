@@ -75,12 +75,12 @@
     </div>
 
     <!-- FAB -->
-    <div style="position: fixed; right: 20px; bottom: 120px; z-index: 50;">
+    <div style="position: fixed; right: 20px; bottom: 100px; z-index: 50;">
       <button
-        style="width: 56px; height: 56px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.2); border: none; cursor: pointer;"
+        style="width: 56px; height: 56px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.2); border: none; cursor: pointer; border-radius: 50%;"
         @click="goToAddMember"
       >
-        <span style="font-size: 24px; font-weight: bold; line-height: 1;">+</span>
+        <span style="font-size: 24px; font-weight: bold; line-height: 1; color: white;">+</span>
       </button>
     </div>
   </div>
