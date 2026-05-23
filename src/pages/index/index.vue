@@ -48,19 +48,19 @@
         <!-- Stats Grid -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px">
           <div style="background: white; padding: 16px; border: 1px solid #f3f4f6">
-            <div style="font-size: 24px; font-weight: 700; color: #0d9488">12</div>
+            <div style="font-size: 24px; font-weight: 700; color: #0d9488">{{ todayStats.rechargeCount }}</div>
             <div style="font-size: 12px; color: #6b7280; margin-top: 4px">今日充值总人数</div>
           </div>
           <div style="background: white; padding: 16px; border: 1px solid #f3f4f6">
-            <div style="font-size: 24px; font-weight: 700; color: #0d9488">28</div>
+            <div style="font-size: 24px; font-weight: 700; color: #0d9488">{{ todayStats.consumeCount }}</div>
             <div style="font-size: 12px; color: #6b7280; margin-top: 4px">今日消费总人数</div>
           </div>
           <div style="background: white; padding: 16px; border: 1px solid #f3f4f6">
-            <div style="font-size: 24px; font-weight: 700; color: #0d9488">¥2,580</div>
+            <div style="font-size: 24px; font-weight: 700; color: #0d9488">¥{{ todayStats.rechargeAmount }}</div>
             <div style="font-size: 12px; color: #6b7280; margin-top: 4px">今日充值总金额</div>
           </div>
           <div style="background: white; padding: 16px; border: 1px solid #f3f4f6">
-            <div style="font-size: 24px; font-weight: 700; color: #0d9488">156</div>
+            <div style="font-size: 24px; font-weight: 700; color: #0d9488">{{ todayStats.memberCount }}</div>
             <div style="font-size: 12px; color: #6b7280; margin-top: 4px">当前会员总数</div>
           </div>
         </div>
@@ -380,7 +380,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onShow } from 'vue'
+import { memberService } from '@/services/memberService'
+import { rechargeService } from '@/services/rechargeService'
+import { consumptionService } from '@/services/consumptionService'
 
 const activeTab = ref('quick')
 
@@ -394,17 +397,79 @@ const quickActions = [
   { id: 'settings', name: '设置', icon: 'settings', route: '/pages/settings/index' }
 ]
 
-const recentActivity = [
-  { id: 1, type: 'recharge', name: '张三', action: '充值', detail: '+10次剪发 · 支付¥500', time: '10:23' },
-  { id: 2, type: 'consume', name: '李四', action: '剪发', detail: '-1次 · 发型师阿明', time: '10:15' },
-  { id: 3, type: 'consume', name: '王五', action: '染发', detail: '-2次 · 发型师阿杰', time: '09:45' }
-]
+// 获取今日统计数据
+const todayStats = computed(() => {
+  const today = new Date().toDateString()
+  const todayRecharges = rechargeService.getAll().filter(r =>
+    new Date(r.rechargeTime).toDateString() === today
+  )
+  const todayConsumes = consumptionService.getAll().filter(c =>
+    new Date(c.consumptionTime).toDateString() === today
+  )
+  const totalMembers = memberService.getAll().length
+
+  return {
+    rechargeCount: new Set(todayRecharges.map(r => r.memberId)).size,
+    consumeCount: new Set(todayConsumes.map(c => c.memberId)).size,
+    rechargeAmount: todayRecharges.reduce((sum, r) => sum + r.amount, 0),
+    memberCount: totalMembers
+  }
+})
+
+// 获取最近活动
+const recentActivity = computed(() => {
+  const activities: any[] = []
+
+  // 充值记录
+  const recharges = rechargeService.getAll().slice(0, 10).map(r => {
+    const member = memberService.getById(r.memberId)
+    return {
+      id: 'r-' + r.id,
+      type: 'recharge' as const,
+      name: member?.name || '未知会员',
+      action: '充值',
+      detail: `+${r.haircutCount}次剪发 · 支付¥${r.amount}`,
+      time: formatTime(r.rechargeTime),
+      rawTime: r.rechargeTime
+    }
+  })
+  activities.push(...recharges)
+
+  // 消费记录
+  const consumes = consumptionService.getAll().slice(0, 10).map(c => {
+    const member = memberService.getById(c.memberId)
+    return {
+      id: 'c-' + c.id,
+      type: 'consume' as const,
+      name: member?.name || '未知会员',
+      action: c.serviceType,
+      detail: `-${c.usedHaircuts}次 · 发型师${c.hairstylist || '未指定'}`,
+      time: formatTime(c.consumptionTime),
+      rawTime: c.consumptionTime
+    }
+  })
+  activities.push(...consumes)
+
+  // 按时间倒序排列，取最新5条
+  return activities.sort((a, b) => {
+    return new Date(b.rawTime).getTime() - new Date(a.rawTime).getTime()
+  }).slice(0, 5)
+})
 
 const topMembers = [
   { id: 1, rank: 1, name: '张总', amount: '5,000', remaining: 88 },
   { id: 2, rank: 2, name: '李女士', amount: '3,000', remaining: 45 },
   { id: 3, rank: 3, name: '王先生', amount: '2,000', remaining: 32 }
 ]
+
+function formatTime(timeStr: string) {
+  const time = new Date(timeStr)
+  const today = new Date()
+  if (time.toDateString() === today.toDateString()) {
+    return time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+  }
+  return '昨天'
+}
 
 const handleAction = (action: any) => {
   if (action.route) {

@@ -165,14 +165,11 @@
       </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <BottomNavigation activeTab="home" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import BottomNavigation from '@/components/BottomNavigation.vue'
 import { rechargeService } from '@/services/rechargeService'
 import { consumptionService } from '@/services/consumptionService'
 

@@ -219,6 +219,7 @@ const activeTab = ref('quick')
 const showMemberSelector = ref(false)
 const memberSearchKeyword = ref('')
 const selectedMember = ref<Member | null>(null)
+const initialMemberId = ref<string | null>(null)
 
 const tabs = [
   { id: 'quick', name: '快速消费' },
@@ -335,7 +336,24 @@ function handleSubmit() {
   }
 }
 
+onLoad((options: any) => {
+  if (options.memberId) {
+    initialMemberId.value = options.memberId
+  }
+})
+
 onShow(() => {
+  // 如果有初始会员ID且还没有选中会员，自动加载
+  if (initialMemberId.value && !selectedMember.value) {
+    const member = memberService.getById(initialMemberId.value)
+    if (member) {
+      selectedMember.value = member
+    }
+  }
+  // 如果之前选中了会员，刷新数据
+  if (selectedMember.value) {
+    selectedMember.value = memberService.getById(selectedMember.value.id)
+  }
   serviceTypes.value = serviceTypeService.getAll()
   hairstylists.value = hairstylistService.getAll()
 })
