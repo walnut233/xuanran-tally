@@ -14,6 +14,12 @@ export const rechargeService = {
     return data.recharges
   },
 
+  // 根据ID获取充值记录
+  getById(id: string): Recharge | undefined {
+    const data = db.getDB()
+    return data.recharges.find(r => r.id === id)
+  },
+
   // 根据会员ID获取充值记录
   getByMemberId(memberId: string): Recharge[] {
     const data = db.getDB()

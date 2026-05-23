@@ -14,6 +14,12 @@ export const consumptionService = {
     return data.consumptions
   },
 
+  // 根据ID获取消费记录
+  getById(id: string): Consumption | undefined {
+    const data = db.getDB()
+    return data.consumptions.find(c => c.id === id)
+  },
+
   // 根据会员ID获取消费记录
   getByMemberId(memberId: string): Consumption[] {
     const data = db.getDB()

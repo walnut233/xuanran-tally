@@ -118,7 +118,7 @@
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
             <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
-            <span>{{ formatTime(record.consumeTime) }}</span>
+            <span>{{ formatTime(getTimeField(record)) }}</span>
           </div>
         </div>
       </div>
@@ -141,7 +141,7 @@
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
             <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
-            <span>{{ formatDate(record.consumeTime) }}</span>
+            <span>{{ formatDate(getTimeField(record)) }}</span>
           </div>
         </div>
       </div>
@@ -255,7 +255,8 @@ const filteredMembers = computed(() => {
 const todayConsumptions = computed(() => {
   const today = new Date().toDateString()
   return consumptionService.getAll().filter(r => {
-    const consumeDate = new Date(r.consumeTime).toDateString()
+    const timeField = r.consumptionTime || (r as any).consumeTime || ''
+    const consumeDate = new Date(timeField).toDateString()
     return consumeDate === today
   }).reverse()
 })
@@ -281,6 +282,11 @@ function formatTime(timeStr: string) {
 function formatDate(timeStr: string) {
   const time = new Date(timeStr)
   return time.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+// 兼容字段名
+function getTimeField(record: any): string {
+  return record.consumptionTime || getTimeField(record) || ''
 }
 
 function selectMember(member: Member) {

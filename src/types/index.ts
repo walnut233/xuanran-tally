@@ -37,6 +37,7 @@ export interface ServiceType {
   id: string
   name: string
   haircutCost: number
+  defaultHaircuts?: number // 兼容字段，同haircutCost
 }
 
 // 美发师类型

@@ -17,7 +17,7 @@
           <span style="font-size: 24px; font-weight: bold; color: #374151; line-height: 1;">‹</span>
         </button>
         <h1 style="flex: 1; text-align: center; font-size: 16px; font-weight: 600; color: #1f2937; margin: 0;">会员详情</h1>
-        <button style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #0d9488; background: transparent; border: none; cursor: pointer; flex-shrink: 0;">
+        <button style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #0d9488; background: transparent; border: none; cursor: pointer; flex-shrink: 0;" @click="goToEdit">
           <span style="font-size: 20px;">✏️</span>
         </button>
       </div>
@@ -136,7 +136,7 @@
 
       <!-- Delete Button -->
       <div style="margin-top: 8px;">
-        <button style="width: 100%; height: 52px; background-color: white; border: 1px solid #ef4444; color: #ef4444; font-size: 16px; font-weight: 600; cursor: pointer;">
+        <button style="width: 100%; height: 52px; background-color: white; border: 1px solid #ef4444; color: #ef4444; font-size: 16px; font-weight: 600; cursor: pointer;" @click="handleDelete">
           删除会员
         </button>
       </div>
@@ -147,7 +147,9 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { memberService } from "@/services/memberService";
-import type { Member } from "@/types";
+import { rechargeService } from "@/services/rechargeService";
+import { consumptionService } from "@/services/consumptionService";
+import type { Member, Recharge, Consumption } from "@/types";
 
 const memberId = ref<string>();
 const member = ref<Member>();
@@ -159,18 +161,56 @@ const historyTabs = [
   { id: "consume", name: "消费" },
 ];
 
-const mockHistory = [
-  { id: 1, type: "recharge", title: "充值", detail: "2024年5月20日 · 现金 · 阿明", amount: "+10 次" },
-  { id: 2, type: "consume", title: "剪发", detail: "2024年5月18日 · 阿明", amount: "-1 次" },
-  { id: 3, type: "consume", title: "剪发", detail: "2024年5月5日 · 阿华", amount: "-1 次" },
-  { id: 4, type: "recharge", title: "充值", detail: "2024年4月15日 · 微信 · 阿明", amount: "+20 次" },
-  { id: 5, type: "consume", title: "染烫", detail: "2024年4月10日 · 阿华", amount: "-2 次" },
-];
+// 合并充值和消费记录
+const allHistory = computed(() => {
+  if (!memberId.value) return []
+
+  const recharges = rechargeService.getByMemberId(memberId.value).map(r => ({
+    id: r.id,
+    type: 'recharge' as const,
+    title: '充值',
+    detail: `${formatDate(r.rechargeTime)} · ${r.paymentMethod}`,
+    amount: `+${r.haircutCount} 次`,
+    time: r.rechargeTime
+  }))
+
+  const consumes = consumptionService.getByMemberId(memberId.value).map(c => ({
+    id: c.id,
+    type: 'consume' as const,
+    title: c.serviceType,
+    detail: `${formatDate(c.consumptionTime)} · ${c.hairstylist || '未指定'}`,
+    amount: `-${c.usedHaircuts} 次`,
+    time: c.consumptionTime
+  }))
+
+  // 合并并按时间倒序排序
+  return [...recharges, ...consumes].sort((a, b) => {
+    return new Date(b.time).getTime() - new Date(a.time).getTime()
+  })
+})
 
 const filteredHistory = computed(() => {
-  if (activeTab.value === "all") return mockHistory;
-  return mockHistory.filter((h) => h.type === activeTab.value);
-});
+  if (activeTab.value === "all") return allHistory.value;
+  return allHistory.value.filter((h) => h.type === activeTab.value);
+})
+
+// 辅助函数
+function formatDate(timeStr: string) {
+  const time = new Date(timeStr)
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const recordDate = new Date(time.getFullYear(), time.getMonth(), time.getDate())
+
+  if (recordDate.getTime() === today.getTime()) {
+    return `今天 ${time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`
+  } else if (recordDate.getTime() === yesterday.getTime()) {
+    return `昨天 ${time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`
+  } else {
+    return time.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  }
+}
 
 const goBack = () => {
   uni.navigateBack();
@@ -190,6 +230,36 @@ const goToConsume = () => {
       url: `/pages/consumption/index?memberId=${member.value.id}`
     });
   }
+};
+
+const goToEdit = () => {
+  if (member.value) {
+    uni.navigateTo({
+      url: `/pages/member/edit?id=${member.value.id}`
+    });
+  }
+};
+
+const handleDelete = () => {
+  uni.showModal({
+    title: '确认删除',
+    content: '删除后该会员的所有数据将无法恢复，确定要删除吗？',
+    confirmColor: '#ef4444',
+    success: (res) => {
+      if (res.confirm && memberId.value) {
+        const deleted = memberService.delete(memberId.value)
+        if (deleted) {
+          uni.showToast({
+            title: '删除成功',
+            icon: 'success'
+          })
+          setTimeout(() => {
+            uni.navigateBack()
+          }, 500)
+        }
+      }
+    }
+  })
 };
 
 onLoad((options: any) => {
