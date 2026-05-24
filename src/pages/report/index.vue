@@ -127,6 +127,70 @@
           </div>
         </div>
       </div>
+
+      <!-- 会员报表 -->
+      <div v-if="activeTab === 'member'">
+        <!-- 总览统计 -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">{{ memberStats.totalMembers }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">会员总数</div>
+          </div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">{{ memberStats.totalRemaining }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">剩余总次数</div>
+          </div>
+        </div>
+
+        <!-- 会员剩余次数排行 -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">会员剩余次数排行</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
+            <div v-for="(item, index) in remainingRanking" :key="item.id" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center;">{{ index + 1 }}</div>
+                <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ item.name }}</span>
+              </div>
+              <span :style="item.remainingHaircuts <= 3 ? 'font-weight: 600; color: #ef4444;' : 'font-size: 14px; color: #0d9488; font-weight: 600;'">剩余 {{ item.remainingHaircuts }} 次</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 累计充值金额排行 -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">累计充值金额排行</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
+            <div v-for="(item, index) in rechargeRanking" :key="item.id" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div :style="[
+                  'width: 28px; height: 28px; color: white; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center;',
+                  index === 0 ? 'background: linear-gradient(135deg, #facc15 0%, #f97316 100%);' :
+                  index === 1 ? 'background: linear-gradient(135deg, #d1d5db 0%, #6b7280 100%);' :
+                  index === 2 ? 'background: linear-gradient(135deg, #d97706 0%, #92400e 100%);' : 'background: #ccfbf1; color: #0d9488;'
+                ]">
+                  {{ index + 1 }}
+                </div>
+                <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ item.name }}</span>
+              </div>
+              <span style="font-size: 14px; color: #0d9488; font-weight: 600;">¥{{ item.totalAmount }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 消费频次排行 -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">消费频次排行</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
+            <div v-for="(item, index) in consumptionRanking" :key="item.id" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 28px; height: 28px; background: #ccfbf1; color: #0d9488; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center;">{{ index + 1 }}</div>
+                <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ item.name }}</span>
+              </div>
+              <span style="font-size: 14px; color: #0d9488; font-weight: 600;">{{ item.consumeCount }} 次</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 日期选择弹窗 -->
@@ -164,7 +228,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -172,6 +235,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { rechargeService } from '@/services/rechargeService'
 import { consumptionService } from '@/services/consumptionService'
+import { memberService } from '@/services/memberService'
 
 const activeTab = ref('day')
 const now = new Date()
@@ -185,9 +249,11 @@ const monthInputValue = ref('')
 
 const tabs = [
   { id: 'day', name: '日报' },
-  { id: 'month', name: '月报' }
+  { id: 'month', name: '月报' },
+  { id: 'member', name: '会员报表' }
 ]
 
+// 日报统计
 const dayStats = computed(() => {
   const date = new Date(selectedDate.value)
   const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
@@ -219,6 +285,7 @@ const dayHairstylistStats = computed(() => {
   return consumptionService.getStatsByHairstylist(new Date(startOfDay).toISOString(), new Date(endOfDay).toISOString())
 })
 
+// 月报统计
 const monthStats = computed(() => {
   const date = new Date(selectedMonth.value)
   const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).getTime()
@@ -248,6 +315,74 @@ const monthHairstylistStats = computed(() => {
   const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59).getTime()
 
   return consumptionService.getStatsByHairstylist(new Date(startOfMonth).toISOString(), new Date(endOfMonth).toISOString())
+})
+
+// 会员报表统计
+const memberStats = computed(() => {
+  const members = memberService.getAll()
+  const totalRemaining = members.reduce((sum, m) => sum + m.remainingHaircuts, 0)
+
+  return {
+    totalMembers: members.length,
+    totalRemaining
+  }
+})
+
+const remainingRanking = computed(() => {
+  const members = memberService.getAll()
+  return [...members]
+    .sort((a, b) => b.remainingHaircuts - a.remainingHaircuts)
+    .map(m => ({
+      id: m.id,
+      name: m.name,
+      remainingHaircuts: m.remainingHaircuts
+    }))
+})
+
+const rechargeRanking = computed(() => {
+  const members = memberService.getAll()
+  const recharges = rechargeService.getAll()
+
+  const memberRechargeAmounts: Record<string, number> = {}
+  for (const r of recharges) {
+    if (memberRechargeAmounts[r.memberId]) {
+      memberRechargeAmounts[r.memberId] += r.amount
+    } else {
+      memberRechargeAmounts[r.memberId] = r.amount
+    }
+  }
+
+  return members
+    .map(m => ({
+      id: m.id,
+      name: m.name,
+      totalAmount: memberRechargeAmounts[m.id] || 0
+    }))
+    .sort((a, b) => b.totalAmount - a.totalAmount)
+    .filter(item => item.totalAmount > 0)
+})
+
+const consumptionRanking = computed(() => {
+  const members = memberService.getAll()
+  const consumptions = consumptionService.getAll()
+
+  const memberConsumeCounts: Record<string, number> = {}
+  for (const c of consumptions) {
+    if (memberConsumeCounts[c.memberId]) {
+      memberConsumeCounts[c.memberId] += 1
+    } else {
+      memberConsumeCounts[c.memberId] = 1
+    }
+  }
+
+  return members
+    .map(m => ({
+      id: m.id,
+      name: m.name,
+      consumeCount: memberConsumeCounts[m.id] || 0
+    }))
+    .sort((a, b) => b.consumeCount - a.consumeCount)
+    .filter(item => item.consumeCount > 0)
 })
 
 function formatDate(timestamp: number): string {
