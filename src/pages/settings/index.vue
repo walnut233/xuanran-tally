@@ -309,7 +309,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onShow } from 'vue'
+import { ref, computed } from 'vue'
 import { settingsService, type ShopSettings, type SystemSettings } from '@/services/settingsService'
 import { serviceTypeService } from '@/services/serviceTypeService'
 import { hairstylistService } from '@/services/hairstylistService'
