@@ -191,6 +191,16 @@
           </div>
         </div>
       </div>
+
+      <!-- 导出按钮 -->
+      <div style="margin-top: 20px;">
+        <button
+          style="width: 100%; height: 52px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white; font-size: 16px; font-weight: 600; border: none; cursor: pointer;"
+          @click="exportReport"
+        >
+          导出当前报表
+        </button>
+      </div>
     </div>
 
     <!-- 日期选择弹窗 -->
@@ -417,6 +427,86 @@ onMounted(() => {
   const monthDate = new Date(selectedMonth.value)
   monthInputValue.value = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, '0')}`
 })
+
+function exportReport() {
+  let content = ''
+  const title = activeTab.value === 'day' ? '日报表' : activeTab.value === 'month' ? '月报表' : '会员报表'
+  content += `${title}\n`
+  content += `导出时间: ${new Date().toLocaleString('zh-CN')}\n\n`
+
+  if (activeTab.value === 'day') {
+    content += `充值次数: ${dayStats.rechargeCount}\n`
+    content += `充值金额: ¥${dayStats.rechargeAmount}\n`
+    content += `消费次数: ${dayStats.consumptionCount}\n\n`
+
+    if (Object.keys(dayServiceStats).length > 0) {
+      content += `服务类型统计:\n`
+      for (const [type, count] of Object.entries(dayServiceStats)) {
+        content += `  ${type}: ${count}次\n`
+      }
+      content += '\n'
+    }
+
+    if (Object.keys(dayHairstylistStats).length > 0) {
+      content += `美发师统计:\n`
+      for (const [name, count] of Object.entries(dayHairstylistStats)) {
+        content += `  ${name}: ${count}次\n`
+      }
+      content += '\n'
+    }
+  } else if (activeTab.value === 'month') {
+    content += `充值次数: ${monthStats.rechargeCount}\n`
+    content += `充值金额: ¥${monthStats.rechargeAmount}\n`
+    content += `消费次数: ${monthStats.consumptionCount}\n\n`
+
+    if (Object.keys(monthServiceStats).length > 0) {
+      content += `服务类型统计:\n`
+      for (const [type, count] of Object.entries(monthServiceStats)) {
+        content += `  ${type}: ${count}次\n`
+      }
+      content += '\n'
+    }
+
+    if (Object.keys(monthHairstylistStats).length > 0) {
+      content += `美发师统计:\n`
+      for (const [name, count] of Object.entries(monthHairstylistStats)) {
+        content += `  ${name}: ${count}次\n`
+      }
+      content += '\n'
+    }
+  } else if (activeTab.value === 'member') {
+    content += `会员总数: ${memberStats.totalMembers}\n`
+    content += `剩余总次数: ${memberStats.totalRemaining}\n\n`
+
+    content += `会员剩余次数排行:\n`
+    remainingRanking.slice(0, 10).forEach((item, index) => {
+      content += `  ${index + 1}. ${item.name} - 剩余${item.remainingHaircuts}次\n`
+    })
+    content += '\n'
+
+    content += `累计充值金额排行:\n`
+    rechargeRanking.slice(0, 10).forEach((item, index) => {
+      content += `  ${index + 1}. ${item.name} - ¥${item.totalAmount}\n`
+    })
+    content += '\n'
+
+    content += `消费频次排行:\n`
+    consumptionRanking.slice(0, 10).forEach((item, index) => {
+      content += `  ${index + 1}. ${item.name} - ${item.consumeCount}次\n`
+    })
+    content += '\n'
+  }
+
+  uni.setClipboardData({
+    data: content,
+    success: () => {
+      uni.showToast({
+        title: '已复制到剪贴板',
+        icon: 'success'
+      })
+    }
+  })
+}
 </script>
 
 <style>
