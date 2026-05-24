@@ -16,7 +16,7 @@
       <!-- Header -->
       <div style="padding: 16px 20px">
         <div style="margin-bottom: 4px">
-          <h1 style="font-size: 20px; font-weight: 600; color: white; margin: 0">渲染造型</h1>
+          <h1 style="font-size: 20px; font-weight: 600; color: white; margin: 0">{{ shopSettings.name }}</h1>
         </div>
         <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin: 0">今天是个好日子，祝你生意兴隆！</p>
       </div>
@@ -380,12 +380,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onShow } from 'vue'
+import { ref, computed } from 'vue'
 import { memberService } from '@/services/memberService'
 import { rechargeService } from '@/services/rechargeService'
 import { consumptionService } from '@/services/consumptionService'
+import { settingsService, type ShopSettings } from '@/services/settingsService'
 
 const activeTab = ref('quick')
+const shopSettings = ref<ShopSettings>(settingsService.getShopSettings())
 
 const tabs = [
   { id: 'quick', name: '快捷入口' },
@@ -478,4 +480,8 @@ const handleAction = (action: any) => {
     })
   }
 }
+
+onShow(() => {
+  shopSettings.value = settingsService.getShopSettings()
+})
 </script>

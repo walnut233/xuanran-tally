@@ -19,7 +19,7 @@ export interface SystemSettings {
 
 // 默认设置
 const DEFAULT_SHOP_SETTINGS: ShopSettings = {
-  name: '发艺坊理发店',
+  name: '渲染造型',
   phone: '138-8888-8888',
   address: '北京市朝阳区...'
 }
