@@ -116,9 +116,17 @@
             <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
             <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-{{ record.usedHaircuts }} 次</span>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 12px;">
             <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
             <span>{{ formatTime(getTimeField(record)) }}</span>
+          </div>
+          <div style="display: flex; justify-content: flex-end;">
+            <button
+              style="padding: 8px 16px; background-color: #ccfbf1; color: #0d9488; font-size: 12px; font-weight: 500; border: none; border-radius: 4px; cursor: pointer;"
+              @click="quickCopyRecord(record)"
+            >
+              快速复制
+            </button>
           </div>
         </div>
       </div>
@@ -139,9 +147,17 @@
             <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
             <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-{{ record.usedHaircuts }} 次</span>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 12px;">
             <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
             <span>{{ formatDate(getTimeField(record)) }}</span>
+          </div>
+          <div style="display: flex; justify-content: flex-end;">
+            <button
+              style="padding: 8px 16px; background-color: #ccfbf1; color: #0d9488; font-size: 12px; font-weight: 500; border: none; border-radius: 4px; cursor: pointer;"
+              @click="quickCopyRecord(record)"
+            >
+              快速复制
+            </button>
           </div>
         </div>
       </div>
@@ -298,6 +314,25 @@ function selectMember(member: Member) {
 function selectService(service: ServiceType) {
   form.value.serviceType = service.name
   form.value.usedHaircuts = service.defaultHaircuts
+}
+
+function quickCopyRecord(record: any) {
+  // 自动选中会员
+  const member = memberService.getById(record.memberId)
+  if (member) {
+    selectedMember.value = member
+  }
+  // 填充表单
+  form.value.serviceType = record.serviceType
+  form.value.usedHaircuts = record.usedHaircuts
+  form.value.hairstylist = record.hairstylist || ''
+  form.value.remark = record.remark || ''
+  // 切换到快速消费tab
+  activeTab.value = 'quick'
+  uni.showToast({
+    title: '已复制记录',
+    icon: 'success'
+  })
 }
 
 function handleSubmit() {
