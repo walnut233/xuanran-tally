@@ -26,44 +26,45 @@
       <!-- 店铺设置 -->
       <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; margin-top: 4px;">店铺设置</div>
       <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showEditDialog('name')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🏠</span>
             <span style="font-size: 14px; color: #1f2937;">店铺名称</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">发艺坊理发店</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ shopSettings.name }}</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showEditDialog('phone')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📞</span>
             <span style="font-size: 14px; color: #1f2937;">联系电话</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">138-8888-8888</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ shopSettings.phone }}</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showEditDialog('address')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📍</span>
             <span style="font-size: 14px; color: #1f2937;">店铺地址</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">北京市朝阳区...</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ shopSettings.address }}</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
       </div>
 
       <!-- 服务管理 -->
-      <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务管理</div>      <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务管理</div>
+      <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
         <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('/pages/serviceType/list')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🎫</span>
             <span style="font-size: 14px; color: #1f2937;">服务项目</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">4项</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ serviceTypeCount }}项</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
         <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="handleNavigate('/pages/hairstylist/list')">
@@ -72,7 +73,7 @@
             <span style="font-size: 14px; color: #1f2937;">发型师管理</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">4人</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ hairstylistCount }}人</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
       </div>
@@ -86,17 +87,17 @@
             <span style="font-size: 14px; color: #1f2937;">自动备份</span>
           </span>
           <div style="flex: 1;"></div>
-          <div style="width: 52px; height: 30px; position: relative; cursor: pointer;" :style="autoBackup ? 'background-color: #14b8a6;' : 'background-color: #e5e7eb;'" @click="autoBackup = !autoBackup">
-            <div style="position: absolute; width: 26px; height: 26px; background-color: white; top: 2px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); transition: all 0.2s;" :style="autoBackup ? 'left: 24px;' : 'left: 2px;'"></div>
+          <div style="width: 52px; height: 30px; position: relative; cursor: pointer;" :style="systemSettings.autoBackup ? 'background-color: #14b8a6;' : 'background-color: #e5e7eb;'" @click="toggleAutoBackup">
+            <div style="position: absolute; width: 26px; height: 26px; background-color: white; top: 2px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); transition: all 0.2s;" :style="systemSettings.autoBackup ? 'left: 24px;' : 'left: 2px;'"></div>
           </div>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showBackupList">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">⏰</span>
-            <span style="font-size: 14px; color: #1f2937;">备份频率</span>
+            <span style="font-size: 14px; color: #1f2937;">备份管理</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">每天 02:00</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ backupCount }}个备份</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
         <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
@@ -105,10 +106,11 @@
             <span style="font-size: 14px; color: #1f2937;">最近备份</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background-color: #ccfbf1; color: #0d9488; font-size: 12px; font-weight: 500;">
+          <span v-if="lastBackup" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background-color: #ccfbf1; color: #0d9488; font-size: 12px; font-weight: 500;">
             <span style="width: 6px; height: 6px; background-color: #0d9488;"></span>
-            2小时前
+            {{ lastBackupText }}
           </span>
+          <span v-else style="color: #9ca3af; font-size: 12px;">暂无备份</span>
         </div>
         <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
           <span style="display: flex; align-items: center; gap: 12px;">
@@ -118,16 +120,16 @@
           <div style="flex: 1;"></div>
           <button style="background-color: #14b8a6; color: white; padding: 8px 16px; font-size: 12px; font-weight: 600; border: none; cursor: pointer;" @click="handleBackup">备份</button>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleExport">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📤</span>
             <span style="font-size: 14px; color: #1f2937;">导出数据</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">Excel</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">JSON</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showImportDialog">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📥</span>
             <span style="font-size: 14px; color: #1f2937;">恢复数据</span>
@@ -142,38 +144,39 @@
       <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
         <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
           <span style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🔔</span>            <span style="font-size: 14px; color: #1f2937;">消费提醒</span>
+            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🔔</span>
+            <span style="font-size: 14px; color: #1f2937;">消费提醒</span>
           </span>
           <div style="flex: 1;"></div>
-          <div style="width: 52px; height: 30px; position: relative; cursor: pointer;" :style="consumeReminder ? 'background-color: #14b8a6;' : 'background-color: #e5e7eb;'" @click="consumeReminder = !consumeReminder">
-            <div style="position: absolute; width: 26px; height: 26px; background-color: white; top: 2px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); transition: all 0.2s;" :style="consumeReminder ? 'left: 24px;' : 'left: 2px;'"></div>
+          <div style="width: 52px; height: 30px; position: relative; cursor: pointer;" :style="systemSettings.consumeReminder ? 'background-color: #14b8a6;' : 'background-color: #e5e7eb;'" @click="toggleConsumeReminder">
+            <div style="position: absolute; width: 26px; height: 26px; background-color: white; top: 2px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); transition: all 0.2s;" :style="systemSettings.consumeReminder ? 'left: 24px;' : 'left: 2px;'"></div>
           </div>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showEditDialog('lowCountThreshold')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">⚠️</span>
             <span style="font-size: 14px; color: #1f2937;">次数不足提醒</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">剩余3次</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">剩余{{ systemSettings.lowCountThreshold }}次</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">💰</span>
             <span style="font-size: 14px; color: #1f2937;">充值金额预设</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">¥200/¥500/¥1000</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">¥{{ systemSettings.rechargePresets.join('/¥') }}</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showFeatureToast">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🎨</span>
             <span style="font-size: 14px; color: #1f2937;">主题设置</span>
           </span>
           <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">青色主题</span>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ systemSettings.theme }}</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
       </div>
@@ -181,7 +184,7 @@
       <!-- 其他 -->
       <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">其他</div>
       <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">❓</span>
             <span style="font-size: 14px; color: #1f2937;">帮助与反馈</span>
@@ -189,7 +192,7 @@
           <div style="flex: 1;"></div>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📖</span>
             <span style="font-size: 14px; color: #1f2937;">使用说明</span>
@@ -208,12 +211,13 @@
             已是最新
           </span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="handleNavigate('settings')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showFeatureToast">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">ℹ️</span>
             <span style="font-size: 14px; color: #1f2937;">关于我们</span>
           </span>
-          <div style="flex: 1;"></div>          <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
+          <div style="flex: 1;"></div>
+          <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
       </div>
 
@@ -228,18 +232,123 @@
       <div style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 16px; margin-bottom: 16px; position: relative;">
         <span style="background-color: #f9fafb; padding: 0 16px; position: relative; z-index: 10;">危险操作</span>
       </div>
-      <button style="width: 100%; height: 52px; background-color: white; border: 1px solid #ef4444; color: #ef4444; font-size: 16px; font-weight: 600; cursor: pointer;">
+      <button style="width: 100%; height: 52px; background-color: white; border: 1px solid #ef4444; color: #ef4444; font-size: 16px; font-weight: 600; cursor: pointer;" @click="handleClearAllData">
         清除所有数据
       </button>
+    </div>
+
+    <!-- 编辑弹窗 -->
+    <div v-if="showDialog" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: flex-end;" @click.self="closeDialog">
+      <div style="background-color: white; width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+          <button style="color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer;" @click="closeDialog">取消</button>
+          <span style="font-weight: 500; color: #1f2937;">{{ dialogTitle }}</span>
+          <button style="color: #0d9488; font-size: 14px; font-weight: 500; background: none; border: none; cursor: pointer;" @click="saveDialog">确定</button>
+        </div>
+        <div style="padding: 20px;">
+          <input
+            v-if="dialogField !== 'lowCountThreshold'"
+            v-model="dialogValue"
+            :type="dialogField === 'phone' ? 'number' : 'text'"
+            style="width: 100%; height: 48px; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 16px; box-sizing: border-box; background-color: #f9fafb;"
+          />
+          <input
+            v-else
+            v-model.number="dialogValue"
+            type="number"
+            min="1"
+            max="10"
+            style="width: 100%; height: 48px; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 16px; box-sizing: border-box; background-color: #f9fafb;"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- 备份列表弹窗 -->
+    <div v-if="showBackupListDialog" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: flex-end;" @click.self="closeBackupList">
+      <div style="background-color: white; width: 100%; max-height: 70vh; display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+          <button style="color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer;" @click="closeBackupList">关闭</button>
+          <span style="font-weight: 500; color: #1f2937;">备份管理</span>
+          <div style="width: 40px;"></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto; padding: 16px;">
+          <div v-if="backupList.length > 0" style="display: flex; flex-direction: column; gap: 10px;">
+            <div
+              v-for="backup in backupList"
+              :key="backup.id"
+              style="background-color: #f9fafb; padding: 16px; display: flex; align-items: center; justify-content: space-between;"
+            >
+              <div>
+                <div style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ formatBackupTime(backup.date) }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ formatBackupDate(backup.date) }}</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button
+                  style="padding: 6px 12px; background: #f0fdf4; color: #0d9488; border: 1px solid #bbf7d0; font-size: 12px; cursor: pointer;"
+                  @click="restoreBackup(backup.id)"
+                >
+                  恢复
+                </button>
+                <button
+                  style="padding: 6px 12px; background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; font-size: 12px; cursor: pointer;"
+                  @click="deleteBackup(backup.id)"
+                >
+                  删除
+                </button>
+              </div>
+            </div>
+          </div>
+          <div v-else style="text-align: center; padding: 64px 0; color: #9ca3af;">
+            暂无备份
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onShow } from 'vue'
+import { settingsService, type ShopSettings, type SystemSettings } from '@/services/settingsService'
+import { serviceTypeService } from '@/services/serviceTypeService'
+import { hairstylistService } from '@/services/hairstylistService'
 
-const autoBackup = ref(true)
-const consumeReminder = ref(true)
+// 设置数据
+const shopSettings = ref<ShopSettings>(settingsService.getShopSettings())
+const systemSettings = ref<SystemSettings>(settingsService.getSystemSettings())
+
+// 计数
+const serviceTypeCount = computed(() => serviceTypeService.getAll().length)
+const hairstylistCount = computed(() => hairstylistService.getAll().length)
+
+// 备份相关
+const backupList = ref<any[]>([])
+const lastBackup = computed(() => {
+  const list = settingsService.getBackupList()
+  return list.length > 0 ? list[0] : null
+})
+const backupCount = computed(() => settingsService.getBackupList().length)
+const lastBackupText = computed(() => {
+  if (!lastBackup.value) return ''
+  const now = new Date()
+  const diff = now.getTime() - lastBackup.value.date.getTime()
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+
+  if (minutes < 1) return '刚刚'
+  if (minutes < 60) return `${minutes}分钟前`
+  if (hours < 24) return `${hours}小时前`
+  return `${days}天前`
+})
+
+// 弹窗相关
+const showDialog = ref(false)
+const showBackupListDialog = ref(false)
+const dialogField = ref<string>('')
+const dialogValue = ref<string>('')
+const dialogTitle = ref<string>('')
 
 function goBack() {
   uni.navigateBack()
@@ -250,20 +359,263 @@ function handleNavigate(path: string) {
     uni.navigateTo({
       url: path
     })
+  }
+}
+
+function showFeatureToast() {
+  uni.showToast({
+    title: '功能开发中',
+    icon: 'none'
+  })
+}
+
+// 店铺设置编辑
+function showEditDialog(field: string) {
+  dialogField.value = field
+  if (field === 'name') {
+    dialogTitle.value = '修改店铺名称'
+    dialogValue.value = shopSettings.value.name
+  } else if (field === 'phone') {
+    dialogTitle.value = '修改联系电话'
+    dialogValue.value = shopSettings.value.phone
+  } else if (field === 'address') {
+    dialogTitle.value = '修改店铺地址'
+    dialogValue.value = shopSettings.value.address
+  } else if (field === 'lowCountThreshold') {
+    dialogTitle.value = '设置提醒阈值'
+    dialogValue.value = String(systemSettings.value.lowCountThreshold)
+  }
+  showDialog.value = true
+}
+
+function closeDialog() {
+  showDialog.value = false
+  dialogField.value = ''
+  dialogValue.value = ''
+}
+
+function saveDialog() {
+  if (dialogField.value === 'name' || dialogField.value === 'phone' || dialogField.value === 'address') {
+    shopSettings.value = settingsService.saveShopSettings({
+      [dialogField.value]: dialogValue.value
+    })
+  } else if (dialogField.value === 'lowCountThreshold') {
+    systemSettings.value = settingsService.saveSystemSettings({
+      lowCountThreshold: parseInt(dialogValue.value) || 3
+    })
+  }
+  closeDialog()
+  uni.showToast({
+    title: '保存成功',
+    icon: 'success'
+  })
+}
+
+// 自动备份开关
+function toggleAutoBackup() {
+  systemSettings.value = settingsService.saveSystemSettings({
+    autoBackup: !systemSettings.value.autoBackup
+  })
+  uni.showToast({
+    title: systemSettings.value.autoBackup ? '已开启自动备份' : '已关闭自动备份',
+    icon: 'success'
+  })
+}
+
+// 消费提醒开关
+function toggleConsumeReminder() {
+  systemSettings.value = settingsService.saveSystemSettings({
+    consumeReminder: !systemSettings.value.consumeReminder
+  })
+  uni.showToast({
+    title: systemSettings.value.consumeReminder ? '已开启消费提醒' : '已关闭消费提醒',
+    icon: 'success'
+  })
+}
+
+// 立即备份
+function handleBackup() {
+  uni.showLoading({ title: '备份中...' })
+  const result = settingsService.createBackup()
+  uni.hideLoading()
+
+  if (result.success) {
+    uni.showToast({
+      title: '备份成功',
+      icon: 'success'
+    })
+    refreshBackupList()
   } else {
     uni.showToast({
-      title: '功能开发中',
+      title: result.message || '备份失败',
       icon: 'none'
     })
   }
 }
 
-function handleBackup() {
-  uni.showToast({
-    title: '备份成功',
-    icon: 'success'
+// 备份列表
+function showBackupList() {
+  refreshBackupList()
+  showBackupListDialog.value = true
+}
+
+function closeBackupList() {
+  showBackupListDialog.value = false
+}
+
+function refreshBackupList() {
+  backupList.value = settingsService.getBackupList()
+}
+
+function formatBackupTime(date: Date): string {
+  return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+}
+
+function formatBackupDate(date: Date): string {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
+}
+
+// 恢复备份
+function restoreBackup(id: string) {
+  uni.showModal({
+    title: '确认恢复',
+    content: '恢复将覆盖当前所有数据，确定要恢复吗？',
+    confirmColor: '#ef4444',
+    success: (res) => {
+      if (res.confirm) {
+        uni.showLoading({ title: '恢复中...' })
+        const result = settingsService.restoreBackup(id)
+        uni.hideLoading()
+
+        if (result.success) {
+          closeBackupList()
+          uni.showToast({
+            title: '恢复成功',
+            icon: 'success'
+          })
+          // 刷新设置
+          shopSettings.value = settingsService.getShopSettings()
+          systemSettings.value = settingsService.getSystemSettings()
+        } else {
+          uni.showToast({
+            title: result.message || '恢复失败',
+            icon: 'none'
+          })
+        }
+      }
+    }
   })
 }
+
+// 删除备份
+function deleteBackup(id: string) {
+  uni.showModal({
+    title: '确认删除',
+    content: '删除备份后将无法恢复，确定要删除吗？',
+    confirmColor: '#ef4444',
+    success: (res) => {
+      if (res.confirm) {
+        settingsService.deleteBackup(id)
+        refreshBackupList()
+        uni.showToast({
+          title: '删除成功',
+          icon: 'success'
+        })
+      }
+    }
+  })
+}
+
+// 导出数据
+function handleExport() {
+  const json = settingsService.exportToJSON()
+
+  // 在H5或小程序中，可以通过复制到剪贴板来实现
+  uni.setClipboardData({
+    data: json,
+    success: () => {
+      uni.showToast({
+        title: '已复制到剪贴板',
+        icon: 'success'
+      })
+    }
+  })
+}
+
+// 导入数据
+function showImportDialog() {
+  uni.showModal({
+    title: '导入数据',
+    content: '请将备份数据复制到剪贴板后，点击确定进行导入',
+    confirmColor: '#0d9488',
+    success: (res) => {
+      if (res.confirm) {
+        uni.getClipboardData({
+          success: (clipRes) => {
+            if (clipRes.data) {
+              uni.showLoading({ title: '导入中...' })
+              const result = settingsService.importFromJSON(clipRes.data)
+              uni.hideLoading()
+
+              if (result.success) {
+                uni.showToast({
+                  title: '导入成功',
+                  icon: 'success'
+                })
+                // 刷新设置
+                shopSettings.value = settingsService.getShopSettings()
+                systemSettings.value = settingsService.getSystemSettings()
+              } else {
+                uni.showToast({
+                  title: result.message || '导入失败',
+                  icon: 'none'
+                })
+              }
+            }
+          }
+        })
+      }
+    }
+  })
+}
+
+// 清除所有数据
+function handleClearAllData() {
+  uni.showModal({
+    title: '警告',
+    content: '此操作将清除所有会员、充值、消费等数据，且无法恢复！确定要继续吗？',
+    confirmColor: '#ef4444',
+    success: (res) => {
+      if (res.confirm) {
+        uni.showModal({
+          title: '再次确认',
+          content: '真的要清除所有数据吗？此操作无法撤销！',
+          confirmColor: '#ef4444',
+          success: (res2) => {
+            if (res2.confirm) {
+              const success = settingsService.clearAllData()
+              if (success) {
+                uni.showToast({
+                  title: '数据已清除',
+                  icon: 'success'
+                })
+                // 刷新设置
+                shopSettings.value = settingsService.getShopSettings()
+                systemSettings.value = settingsService.getSystemSettings()
+              }
+            }
+          }
+        })
+      }
+    }
+  })
+}
+
+onShow(() => {
+  // 刷新设置
+  shopSettings.value = settingsService.getShopSettings()
+  systemSettings.value = settingsService.getSystemSettings()
+})
 </script>
 
 <style>

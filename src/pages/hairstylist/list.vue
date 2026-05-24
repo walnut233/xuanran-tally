@@ -23,9 +23,9 @@
 
     <!-- Content -->
     <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 96px;">
-      <!-- 添加美发师 -->
+      <!-- 添加/编辑美发师 -->
       <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); margin-bottom: 16px;">
-        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">添加美发师</div>
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">{{ editingId ? '编辑美发师' : '添加美发师' }}</div>
         <div style="display: flex; gap: 12px;">
           <input
             v-model="form.name"
@@ -33,11 +33,18 @@
             placeholder="请输入美发师姓名"
           />
           <button
+            v-if="editingId"
+            style="height: 48px; padding: 0 20px; background-color: #6b7280; color: white; font-size: 14px; font-weight: 600; border: none; cursor: pointer;"
+            @click="cancelEdit"
+          >
+            取消
+          </button>
+          <button
             style="height: 48px; padding: 0 20px; background-color: #14b8a6; color: white; font-size: 14px; font-weight: 600; border: none; cursor: pointer;"
             :disabled="!form.name"
-            @click="addHairstylist"
+            @click="handleSubmit"
           >
-            添加
+            {{ editingId ? '保存' : '添加' }}
           </button>
         </div>
       </div>
@@ -52,12 +59,20 @@
             style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;"
           >
             <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ item.name }}</span>
-            <button
-              style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #ef4444; background: none; border: none; cursor: pointer;"
-              @click="deleteHairstylist(item.id)"
-            >
-              <span style="font-size: 20px; font-weight: bold; line-height: 1;">×</span>
-            </button>
+            <div style="display: flex; gap: 8px;">
+              <button
+                style="padding: 6px 12px; background: #f0fdf4; color: #0d9488; border: 1px solid #bbf7d0; font-size: 14px; cursor: pointer;"
+                @click="startEdit(item)"
+              >
+                编辑
+              </button>
+              <button
+                style="padding: 6px 12px; background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; font-size: 14px; cursor: pointer;"
+                @click="deleteHairstylist(item.id)"
+              >
+                删除
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -75,6 +90,7 @@ import { hairstylistService } from '@/services/hairstylistService'
 import type { Hairstylist } from '@/types'
 
 const hairstylists = ref<Hairstylist[]>([])
+const editingId = ref<string | null>(null)
 
 const form = reactive({
   name: ''
@@ -84,21 +100,54 @@ function goBack() {
   uni.navigateBack()
 }
 
-function addHairstylist() {
+function startEdit(item: Hairstylist) {
+  editingId.value = item.id
+  form.name = item.name
+}
+
+function cancelEdit() {
+  editingId.value = null
+  form.name = ''
+}
+
+function handleSubmit() {
   if (!form.name) return
 
-  hairstylistService.add({ name: form.name })
+  if (editingId.value) {
+    hairstylistService.update(editingId.value, { name: form.name })
+    uni.showToast({
+      title: '修改成功',
+      icon: 'success'
+    })
+  } else {
+    hairstylistService.add({ name: form.name })
+    uni.showToast({
+      title: '添加成功',
+      icon: 'success'
+    })
+  }
+
   form.name = ''
+  editingId.value = null
   hairstylists.value = hairstylistService.getAll()
-  uni.showToast({
-    title: '添加成功',
-    icon: 'success'
-  })
 }
 
 function deleteHairstylist(id: string) {
-  hairstylistService.delete(id)
-  hairstylists.value = hairstylistService.getAll()
+  uni.showModal({
+    title: '确认删除',
+    content: '删除后将无法恢复，确定要删除吗？',
+    confirmColor: '#ef4444',
+    success: (res) => {
+      if (res.confirm) {
+        hairstylistService.delete(id)
+        hairstylists.value = hairstylistService.getAll()
+        uni.showToast({
+          title: '删除成功',
+          icon: 'success'
+        })
+      }
+    }
+  })
 }
 
 onShow(() => {

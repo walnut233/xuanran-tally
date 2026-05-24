@@ -26,7 +26,19 @@ function setDB(data: DBData) {
   uni.setStorageSync(DB_KEY, data)
 }
 
+function clearDB() {
+  const emptyData: DBData = {
+    members: [],
+    recharges: [],
+    consumptions: [],
+    serviceTypes: [],
+    hairstylists: []
+  }
+  uni.setStorageSync(DB_KEY, emptyData)
+}
+
 export const db = {
   getDB,
-  setDB
+  setDB,
+  clearDB
 }
