@@ -129,9 +129,60 @@
 
     <!-- 充值历史 Tab -->
     <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 120px;" v-else>
-      <div style="display: flex; flex-direction: column; gap: 10px;" v-if="allRecharges.length > 0">
+      <!-- 时间范围筛选 -->
+      <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;">
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">时间范围</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 12px; color: #6b7280; margin-bottom: 4px; display: block;">开始日期</label>
+            <input
+              v-model="filterStartDate"
+              type="date"
+              style="width: 100%; height: 40px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 12px; font-size: 14px; outline: none; box-sizing: border-box;"
+            />
+          </div>
+          <div>
+            <label style="font-size: 12px; color: #6b7280; margin-bottom: 4px; display: block;">结束日期</label>
+            <input
+              v-model="filterEndDate"
+              type="date"
+              style="width: 100%; height: 40px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 12px; font-size: 14px; outline: none; box-sizing: border-box;"
+            />
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button
+            style="flex: 1; height: 40px; background-color: #14b8a6; color: white; font-size: 14px; font-weight: 500; border: none; cursor: pointer;"
+            @click="applyFilter"
+          >
+            筛选
+          </button>
+          <button
+            style="flex: 1; height: 40px; background-color: #f3f4f6; color: #1f2937; font-size: 14px; font-weight: 500; border: none; cursor: pointer;"
+            @click="resetFilter"
+          >
+            重置
+          </button>
+        </div>
+      </div>
+
+      <!-- 统计信息 -->
+      <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;" v-if="filteredRecharges.length > 0">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; text-align: center;">
+          <div>
+            <div style="font-size: 24px; font-weight: 700; color: #0d9488;">{{ filterStats.totalCount }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">充值笔数</div>
+          </div>
+          <div>
+            <div style="font-size: 24px; font-weight: 700; color: #0d9488;">¥{{ filterStats.totalAmount }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">充值金额</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;" v-if="filteredRecharges.length > 0">
         <div
-          v-for="record in allRecharges"
+          v-for="record in filteredRecharges"
           :key="record.id"
           style="background-color: white; border: 1px solid #f3f4f6; padding: 16px;"
         >
@@ -256,6 +307,46 @@ const allRecharges = computed(() => {
   return [...rechargeService.getAll()].reverse()
 })
 
+// 筛选相关
+const filterStartDate = ref('')
+const filterEndDate = ref('')
+const filteredRecharges = ref([...rechargeService.getAll()].reverse())
+
+const filterStats = computed(() => {
+  return {
+    totalCount: filteredRecharges.value.length,
+    totalAmount: filteredRecharges.value.reduce((sum, r) => sum + Number(r.amount), 0)
+  }
+})
+
+function applyFilter() {
+  let records = [...rechargeService.getAll()].reverse()
+
+  if (filterStartDate.value) {
+    const startDate = new Date(filterStartDate.value)
+    startDate.setHours(0, 0, 0, 0)
+    records = records.filter(r => new Date(r.rechargeTime) >= startDate)
+  }
+
+  if (filterEndDate.value) {
+    const endDate = new Date(filterEndDate.value)
+    endDate.setHours(23, 59, 59, 999)
+    records = records.filter(r => new Date(r.rechargeTime) <= endDate)
+  }
+
+  filteredRecharges.value = records
+  uni.showToast({
+    title: `找到${records.length}条记录`,
+    icon: 'success'
+  })
+}
+
+function resetFilter() {
+  filterStartDate.value = ''
+  filterEndDate.value = ''
+  filteredRecharges.value = [...rechargeService.getAll()].reverse()
+}
+
 function getMemberName(memberId: string) {
   const member = memberService.getById(memberId)
   return member ? member.name : '未知会员'
@@ -326,6 +417,8 @@ onShow(() => {
   if (selectedMember.value) {
     selectedMember.value = memberService.getById(selectedMember.value.id)
   }
+  // 刷新筛选数据
+  filteredRecharges.value = [...rechargeService.getAll()].reverse()
 })
 </script>
 
