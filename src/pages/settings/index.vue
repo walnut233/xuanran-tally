@@ -26,31 +26,13 @@
       <!-- 店铺设置 -->
       <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; margin-top: 4px;">店铺设置</div>
       <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showEditDialog('name')">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showEditDialog('name')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🏠</span>
             <span style="font-size: 14px; color: #1f2937;">店铺名称</span>
           </span>
           <div style="flex: 1;"></div>
           <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ shopSettings.name }}</span>
-          <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
-        </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showEditDialog('phone')">
-          <span style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📞</span>
-            <span style="font-size: 14px; color: #1f2937;">联系电话</span>
-          </span>
-          <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ shopSettings.phone }}</span>
-          <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
-        </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showEditDialog('address')">
-          <span style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📍</span>
-            <span style="font-size: 14px; color: #1f2937;">店铺地址</span>
-          </span>
-          <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ shopSettings.address }}</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
       </div>
@@ -142,25 +124,6 @@
       <!-- 系统设置 -->
       <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">系统设置</div>
       <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
-          <span style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🔔</span>
-            <span style="font-size: 14px; color: #1f2937;">消费提醒</span>
-          </span>
-          <div style="flex: 1;"></div>
-          <div style="width: 52px; height: 30px; position: relative; cursor: pointer;" :style="systemSettings.consumeReminder ? 'background-color: #14b8a6;' : 'background-color: #e5e7eb;'" @click="toggleConsumeReminder">
-            <div style="position: absolute; width: 26px; height: 26px; background-color: white; top: 2px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); transition: all 0.2s;" :style="systemSettings.consumeReminder ? 'left: 24px;' : 'left: 2px;'"></div>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showEditDialog('lowCountThreshold')">
-          <span style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">⚠️</span>
-            <span style="font-size: 14px; color: #1f2937;">次数不足提醒</span>
-          </span>
-          <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">剩余{{ systemSettings.lowCountThreshold }}次</span>
-          <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
-        </div>
         <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">💰</span>
@@ -375,15 +338,6 @@ function showEditDialog(field: string) {
   if (field === 'name') {
     dialogTitle.value = '修改店铺名称'
     dialogValue.value = shopSettings.value.name
-  } else if (field === 'phone') {
-    dialogTitle.value = '修改联系电话'
-    dialogValue.value = shopSettings.value.phone
-  } else if (field === 'address') {
-    dialogTitle.value = '修改店铺地址'
-    dialogValue.value = shopSettings.value.address
-  } else if (field === 'lowCountThreshold') {
-    dialogTitle.value = '设置提醒阈值'
-    dialogValue.value = String(systemSettings.value.lowCountThreshold)
   }
   showDialog.value = true
 }
@@ -395,13 +349,9 @@ function closeDialog() {
 }
 
 function saveDialog() {
-  if (dialogField.value === 'name' || dialogField.value === 'phone' || dialogField.value === 'address') {
+  if (dialogField.value === 'name') {
     shopSettings.value = settingsService.saveShopSettings({
       [dialogField.value]: dialogValue.value
-    })
-  } else if (dialogField.value === 'lowCountThreshold') {
-    systemSettings.value = settingsService.saveSystemSettings({
-      lowCountThreshold: parseInt(dialogValue.value) || 3
     })
   }
   closeDialog()
@@ -418,17 +368,6 @@ function toggleAutoBackup() {
   })
   uni.showToast({
     title: systemSettings.value.autoBackup ? '已开启自动备份' : '已关闭自动备份',
-    icon: 'success'
-  })
-}
-
-// 消费提醒开关
-function toggleConsumeReminder() {
-  systemSettings.value = settingsService.saveSystemSettings({
-    consumeReminder: !systemSettings.value.consumeReminder
-  })
-  uni.showToast({
-    title: systemSettings.value.consumeReminder ? '已开启消费提醒' : '已关闭消费提醒',
     icon: 'success'
   })
 }
