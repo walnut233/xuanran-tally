@@ -1,4 +1,5 @@
 import { db } from './db'
+import type { MemberTier } from '@/types'
 
 // 店铺设置类型
 export interface ShopSettings {
@@ -13,8 +14,10 @@ export interface SystemSettings {
   backupFrequency: string
   consumeReminder: boolean
   lowCountThreshold: number
-  rechargePresets: number[]
   theme: string
+  haircutPrice: number // 剪发价格
+  permColorPrice: number // 烫染价格
+  memberTiers: MemberTier[] // 会员梯度设置
 }
 
 // 默认设置
@@ -24,13 +27,54 @@ const DEFAULT_SHOP_SETTINGS: ShopSettings = {
   address: '北京市朝阳区...'
 }
 
+// 生成唯一ID
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2)
+}
+
 const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   autoBackup: true,
   backupFrequency: '每天 02:00',
   consumeReminder: true,
   lowCountThreshold: 3,
-  rechargePresets: [200, 500, 1000],
-  theme: '青色主题'
+  theme: '青色主题',
+  haircutPrice: 30,
+  permColorPrice: 158,
+  memberTiers: [
+    {
+      id: generateId(),
+      name: '200元档',
+      initialRecharge: 200,
+      prices: [
+        { serviceName: '剪发', price: 20 },
+        { serviceName: '烫发', price: 100 },
+        { serviceName: '染发', price: 100 },
+        { serviceName: '护理', price: 50 }
+      ]
+    },
+    {
+      id: generateId(),
+      name: '500元档',
+      initialRecharge: 500,
+      prices: [
+        { serviceName: '剪发', price: 15 },
+        { serviceName: '烫发', price: 80 },
+        { serviceName: '染发', price: 80 },
+        { serviceName: '护理', price: 40 }
+      ]
+    },
+    {
+      id: generateId(),
+      name: '1000元档',
+      initialRecharge: 1000,
+      prices: [
+        { serviceName: '剪发', price: 12 },
+        { serviceName: '烫发', price: 60 },
+        { serviceName: '染发', price: 60 },
+        { serviceName: '护理', price: 30 }
+      ]
+    }
+  ]
 }
 
 // LocalStorage 键名

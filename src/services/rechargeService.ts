@@ -37,8 +37,8 @@ export const rechargeService = {
     data.recharges.unshift(newRecharge)
     db.setDB(data)
 
-    // 更新会员剩余剪发次数
-    memberService.updateRemainingHaircuts(recharge.memberId, recharge.haircutCount)
+    // 更新会员余额
+    memberService.updateBalance(recharge.memberId, recharge.amount)
 
     return newRecharge
   },
@@ -58,7 +58,7 @@ export const rechargeService = {
       recharges = this.getByDateRange(startDate, endDate)
     }
     return {
-      totalCount: recharges.reduce((sum, r) => sum + r.haircutCount, 0),
+      totalCount: recharges.length,
       totalAmount: recharges.reduce((sum, r) => sum + r.amount, 0)
     }
   }

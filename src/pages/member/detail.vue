@@ -34,27 +34,26 @@
           <div style="flex: 1;">
             <div style="font-size: 20px; font-weight: 700; color: white; margin-bottom: 4px;">{{ member.name }}</div>
             <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin-bottom: 4px;">{{ member.phone }}</div>
-            <div style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">{{ member.createDate ? new Date(member.createDate).toLocaleDateString() + ' 开卡' : '' }}</div>
+            <div style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">{{ member.createDate ? formatChineseDate(member.createDate) + ' 开卡' : '' }}</div>
           </div>
         </div>
-        <div style="background-color: rgba(255, 255, 255, 0.15); padding: 16px; display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin-bottom: 4px;">剩余剪发次数</div>
-            <div style="font-size: 30px; font-weight: 700; color: white;">{{ member.remainingHaircuts }} <span style="font-size: 16px; font-weight: 500;">次</span></div>
+        <div style="background-color: rgba(255, 255, 255, 0.15); padding: 16px; display: flex; flex-direction: column; gap: 16px;">
+          <div style="text-align: center;">
+            <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin-bottom: 4px;">账户余额</div>
+            <div style="font-size: 36px; font-weight: 700; color: white;">¥{{ member.balance }} <span style="font-size: 14px; font-weight: 500; opacity: 0.8;">(可剪 {{ remainingHaircuts }} 次)</span></div>
+            <div v-if="memberTier" style="color: rgba(255, 255, 255, 0.9); font-size: 13px; margin-top: 8px;">{{ memberTier.name }}</div>
           </div>
-          <div style="display: flex; gap: 10px;">
+          <div style="display: flex; gap: 12px;">
             <button
-              style="height: 48px; padding: 0 20px; background-color: white; color: #0d9488; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; border: none; cursor: pointer;"
+              style="flex: 1; height: 48px; padding: 0 20px; background-color: white; color: #0d9488; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; border-radius: 8px;"
               @click="goToRecharge"
             >
-              <span style="font-size: 18px;">💰</span>
               充值
             </button>
             <button
-              style="height: 48px; padding: 0 20px; background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;"
+              style="flex: 1; height: 48px; padding: 0 20px; background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px;"
               @click="goToConsume"
             >
-              <span style="font-size: 18px;">🎫</span>
               消费
             </button>
           </div>
@@ -114,7 +113,7 @@
               :style="item.type === 'recharge' ? 'background-color: #ccfbf1; color: #0d9488;' : 'background-color: #dbeafe; color: #2563eb;'"
             >
               <span v-if="item.type === 'recharge'" style="font-size: 18px;">💰</span>
-              <span v-else style="font-size: 18px;">🎫</span>
+              <span v-else style="font-size: 18px;">💳</span>
             </div>
             <div style="flex: 1; min-width: 0;">
               <div style="font-size: 14px; font-weight: 500; color: #1f2937; margin-bottom: 2px;">{{ item.title }}</div>
@@ -145,21 +144,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { memberService } from "@/services/memberService";
-import { rechargeService } from "@/services/rechargeService";
-import { consumptionService } from "@/services/consumptionService";
-import type { Member, Recharge, Consumption } from "@/types";
+import { ref, computed } from "vue"
+import { memberService } from "@/services/memberService"
+import { rechargeService } from "@/services/rechargeService"
+import { consumptionService } from "@/services/consumptionService"
+import { settingsService } from "@/services/settingsService"
+import type { Member, Recharge, Consumption } from "@/types"
 
-const memberId = ref<string>();
-const member = ref<Member>();
-const activeTab = ref("all");
+const memberId = ref<string>()
+const member = ref<Member>()
+const activeTab = ref("all")
+
+const systemSettings = settingsService.getSystemSettings()
 
 const historyTabs = [
   { id: "all", name: "全部" },
   { id: "recharge", name: "充值" },
   { id: "consume", name: "消费" },
-];
+]
+
+// 计算剩余可剪发次数
+const remainingHaircuts = computed(() => {
+  if (!member.value) return 0
+  // 如果会员有梯度，使用梯度中的剪发价格，否则使用第一个梯度的价格
+  let price = 30
+  if (member.value.tierId) {
+    const tier = systemSettings.memberTiers?.find(t => t.id === member.value!.tierId)
+    if (tier) {
+      const tierPrice = tier.prices.find(p => p.serviceName === '剪发')
+      if (tierPrice) {
+        price = tierPrice.price
+      }
+    }
+  } else if (systemSettings.memberTiers && systemSettings.memberTiers.length > 0) {
+    const firstTier = systemSettings.memberTiers[0]
+    const tierPrice = firstTier.prices.find(p => p.serviceName === '剪发')
+    if (tierPrice) {
+      price = tierPrice.price
+    }
+  }
+  return Math.floor(member.value.balance / price)
+})
+
+// 获取会员梯度信息
+const memberTier = computed(() => {
+  if (!member.value?.tierId) return null
+  return systemSettings.memberTiers?.find(t => t.id === member.value!.tierId)
+})
 
 // 合并充值和消费记录
 const allHistory = computed(() => {
@@ -170,7 +201,7 @@ const allHistory = computed(() => {
     type: 'recharge' as const,
     title: '充值',
     detail: `${formatDate(r.rechargeTime)} · ${r.paymentMethod}`,
-    amount: `+${r.haircutCount} 次`,
+    amount: `+¥${r.amount}`,
     time: r.rechargeTime
   }))
 
@@ -179,22 +210,30 @@ const allHistory = computed(() => {
     type: 'consume' as const,
     title: c.serviceType,
     detail: `${formatDate(c.consumptionTime)} · ${c.hairstylist || '未指定'}`,
-    amount: `-${c.usedHaircuts} 次`,
+    amount: `-¥${c.amount}`,
     time: c.consumptionTime
   }))
 
-  // 合并并按时间倒序排序
+  // 合并并按时间倒序排列
   return [...recharges, ...consumes].sort((a, b) => {
     return new Date(b.time).getTime() - new Date(a.time).getTime()
   })
 })
 
 const filteredHistory = computed(() => {
-  if (activeTab.value === "all") return allHistory.value;
-  return allHistory.value.filter((h) => h.type === activeTab.value);
+  if (activeTab.value === "all") return allHistory.value
+  return allHistory.value.filter((h) => h.type === activeTab.value)
 })
 
 // 辅助函数
+function formatChineseDate(timeStr: string) {
+  const time = new Date(timeStr)
+  const year = time.getFullYear()
+  const month = time.getMonth() + 1
+  const day = time.getDate()
+  return `${year}年${month}月${day}日`
+}
+
 function formatDate(timeStr: string) {
   const time = new Date(timeStr)
   const now = new Date()
@@ -213,32 +252,44 @@ function formatDate(timeStr: string) {
 }
 
 const goBack = () => {
-  uni.navigateBack();
-};
+  uni.navigateBack()
+}
 
 const goToRecharge = () => {
+  console.log('点击充值按钮，会员ID:', member.value?.id)
   if (member.value) {
-    uni.navigateTo({
-      url: `/pages/recharge/index?memberId=${member.value.id}`
-    });
+    // 使用全局变量暂存会员ID
+    (getApp() as any).pendingMemberId = member.value.id
+    // tabBar 页面必须用 switchTab
+    uni.switchTab({
+      url: '/pages/recharge/index',
+      success: () => console.log('跳转充值页面成功'),
+      fail: (err) => console.error('跳转充值页面失败:', err)
+    })
   }
-};
+}
 
 const goToConsume = () => {
+  console.log('点击消费按钮，会员ID:', member.value?.id)
   if (member.value) {
-    uni.navigateTo({
-      url: `/pages/consumption/index?memberId=${member.value.id}`
-    });
+    // 使用全局变量暂存会员ID
+    (getApp() as any).pendingMemberId = member.value.id
+    // tabBar 页面必须用 switchTab
+    uni.switchTab({
+      url: '/pages/consumption/index',
+      success: () => console.log('跳转消费页面成功'),
+      fail: (err) => console.error('跳转消费页面失败:', err)
+    })
   }
-};
+}
 
 const goToEdit = () => {
   if (member.value) {
     uni.navigateTo({
       url: `/pages/member/edit?id=${member.value.id}`
-    });
+    })
   }
-};
+}
 
 const handleDelete = () => {
   uni.showModal({
@@ -260,17 +311,17 @@ const handleDelete = () => {
       }
     }
   })
-};
+}
 
 onLoad((options: any) => {
-  memberId.value = options.id;
-});
+  memberId.value = options.id
+})
 
 onShow(() => {
   if (memberId.value) {
-    member.value = memberService.getById(memberId.value);
+    member.value = memberService.getById(memberId.value)
   }
-});
+})
 </script>
 
 <style>

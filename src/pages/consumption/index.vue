@@ -45,8 +45,11 @@
       <div style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); padding: 20px; margin-bottom: 20px;" v-if="selectedMember">
         <div style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px;">{{ selectedMember.name }}</div>
         <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px;">
-          剩余 <strong style="font-size: 24px; font-weight: 700;">{{ selectedMember.remainingHaircuts }}</strong> 次
-          <span v-if="selectedMember.remainingHaircuts <= 3" style="color: #fef08a; margin-left: 8px;">(余额不足)</span>
+          余额 <strong style="font-size: 24px; font-weight: 700;">¥{{ selectedMember.balance }}</strong>
+          <span v-if="selectedMember.balance < systemSettings.haircutPrice" style="color: #fef08a; margin-left: 8px;">(余额不足)</span>
+        </div>
+        <div v-if="getMemberTier()" style="color: rgba(255, 255, 255, 0.9); font-size: 13px; margin-top: 8px;">
+          {{ getMemberTier()?.name }}
         </div>
       </div>
 
@@ -62,7 +65,7 @@
             @click="selectService(service)"
           >
             <div style="font-weight: 600; color: #1f2937; font-size: 16px; margin-bottom: 4px;">{{ service.name }}</div>
-            <div style="font-size: 14px; color: #6b7280;">-{{ service.defaultHaircuts }} 次</div>
+            <div style="font-size: 14px; color: #6b7280;">-¥{{ getServicePrice(service) }}</div>
           </div>
         </div>
       </div>
@@ -114,7 +117,7 @@
         >
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
-            <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-{{ record.usedHaircuts }} 次</span>
+            <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-¥{{ record.amount }}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 12px;">
             <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
@@ -145,7 +148,7 @@
         >
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
-            <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-{{ record.usedHaircuts }} 次</span>
+            <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-¥{{ record.amount }}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 12px;">
             <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
@@ -202,9 +205,9 @@
                 <div style="font-size: 14px; color: #6b7280;">{{ member.phone }}</div>
                 <div
                   style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin-top: 4px;"
-                  :style="member.remainingHaircuts <= 3 ? 'color: #ef4444;' : 'color: #0d9488;'"
+                  :style="member.balance < systemSettings.haircutPrice ? 'color: #ef4444;' : 'color: #0d9488;'"
                 >
-                  剩余 {{ member.remainingHaircuts }} 次
+                  余额 ¥{{ member.balance }}
                 </div>
               </div>
             </div>
@@ -229,6 +232,7 @@ import { memberService } from '@/services/memberService'
 import { serviceTypeService } from '@/services/serviceTypeService'
 import { hairstylistService } from '@/services/hairstylistService'
 import { consumptionService } from '@/services/consumptionService'
+import { settingsService } from '@/services/settingsService'
 import type { Member, ServiceType, Hairstylist } from '@/types'
 
 const activeTab = ref('quick')
@@ -236,6 +240,8 @@ const showMemberSelector = ref(false)
 const memberSearchKeyword = ref('')
 const selectedMember = ref<Member | null>(null)
 const initialMemberId = ref<string | null>(null)
+
+const systemSettings = settingsService.getSystemSettings()
 
 const tabs = [
   { id: 'quick', name: '快速消费' },
@@ -247,7 +253,7 @@ const hairstylists = ref<Hairstylist[]>([])
 
 const form = ref({
   serviceType: '',
-  usedHaircuts: 1,
+  amount: 0,
   hairstylist: '',
   remark: ''
 })
@@ -255,8 +261,8 @@ const form = ref({
 const canSubmit = computed(() => {
   return selectedMember.value &&
     form.value.serviceType &&
-    form.value.usedHaircuts > 0 &&
-    form.value.usedHaircuts <= selectedMember.value.remainingHaircuts
+    form.value.amount > 0 &&
+    form.value.amount <= selectedMember.value.balance
 })
 
 const allMembers = computed(() => memberService.getAll())
@@ -282,6 +288,35 @@ const allConsumptions = computed(() => {
   return [...consumptionService.getAll()].reverse()
 })
 
+function getServicePrice(service: ServiceType): number {
+  // 如果选中了会员且会员有梯度，使用梯度价格
+  if (selectedMember.value && selectedMember.value.tierId) {
+    const tier = systemSettings.memberTiers?.find(t => t.id === selectedMember.value!.tierId)
+    if (tier) {
+      const tierPrice = tier.prices.find(p => p.serviceName === service.name)
+      if (tierPrice) {
+        return tierPrice.price
+      }
+    }
+  }
+  // 否则使用第一个梯度中的价格，如果没有梯度则使用默认值
+  if (systemSettings.memberTiers && systemSettings.memberTiers.length > 0) {
+    const firstTier = systemSettings.memberTiers[0]
+    const tierPrice = firstTier.prices.find(p => p.serviceName === service.name)
+    if (tierPrice) {
+      return tierPrice.price
+    }
+  }
+  return 30
+}
+
+function getMemberTier() {
+  if (selectedMember.value && selectedMember.value.tierId) {
+    return systemSettings.memberTiers?.find(t => t.id === selectedMember.value!.tierId)
+  }
+  return null
+}
+
 function getMemberName(memberId: string) {
   const member = memberService.getById(memberId)
   return member ? member.name : '未知会员'
@@ -303,7 +338,7 @@ function formatDate(timeStr: string) {
 
 // 兼容字段名
 function getTimeField(record: any): string {
-  return record.consumptionTime || getTimeField(record) || ''
+  return record.consumptionTime || record.consumeTime || ''
 }
 
 function selectMember(member: Member) {
@@ -313,7 +348,7 @@ function selectMember(member: Member) {
 
 function selectService(service: ServiceType) {
   form.value.serviceType = service.name
-  form.value.usedHaircuts = service.defaultHaircuts
+  form.value.amount = getServicePrice(service)
 }
 
 function quickCopyRecord(record: any) {
@@ -324,7 +359,7 @@ function quickCopyRecord(record: any) {
   }
   // 填充表单
   form.value.serviceType = record.serviceType
-  form.value.usedHaircuts = record.usedHaircuts
+  form.value.amount = record.amount
   form.value.hairstylist = record.hairstylist || ''
   form.value.remark = record.remark || ''
   // 切换到快速消费tab
@@ -341,7 +376,7 @@ function handleSubmit() {
   const result = consumptionService.add({
     memberId: selectedMember.value.id,
     serviceType: form.value.serviceType,
-    usedHaircuts: form.value.usedHaircuts,
+    amount: form.value.amount,
     hairstylist: form.value.hairstylist,
     remark: form.value.remark
   })
@@ -361,7 +396,7 @@ function handleSubmit() {
 
   Object.assign(form.value, {
     serviceType: '',
-    usedHaircuts: 1,
+    amount: 0,
     hairstylist: '',
     remark: ''
   })
@@ -372,21 +407,42 @@ function handleSubmit() {
 }
 
 onLoad((options: any) => {
+  console.log('消费页面 onLoad, options:', options)
+  // 先尝试从URL参数获取
   if (options.memberId) {
     initialMemberId.value = options.memberId
+    const member = memberService.getById(options.memberId)
+    if (member) {
+      console.log('从URL找到会员:', member.name)
+      selectedMember.value = member
+    }
   }
 })
 
 onShow(() => {
-  // 如果有初始会员ID且还没有选中会员，自动加载
-  if (initialMemberId.value && !selectedMember.value) {
+  console.log('消费页面 onShow, initialMemberId:', initialMemberId.value)
+
+  // 尝试从全局变量获取待处理的会员ID
+  const app = getApp() as any
+  if (app.pendingMemberId) {
+    console.log('从全局变量获取到会员ID:', app.pendingMemberId)
+    initialMemberId.value = app.pendingMemberId
+    const member = memberService.getById(app.pendingMemberId)
+    if (member) {
+      console.log('找到会员:', member.name)
+      selectedMember.value = member
+    }
+    // 清除全局变量
+    app.pendingMemberId = null
+  }
+  // 如果有初始会员ID，确保选中该会员
+  else if (initialMemberId.value) {
     const member = memberService.getById(initialMemberId.value)
     if (member) {
       selectedMember.value = member
     }
-  }
-  // 如果之前选中了会员，刷新数据
-  if (selectedMember.value) {
+  } else if (selectedMember.value) {
+    // 刷新已选会员数据
     selectedMember.value = memberService.getById(selectedMember.value.id)
   }
   serviceTypes.value = serviceTypeService.getAll()

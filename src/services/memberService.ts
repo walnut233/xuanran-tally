@@ -69,12 +69,12 @@ export const memberService = {
     return true
   },
 
-  // 更新会员剩余剪发次数
-  updateRemainingHaircuts(id: string, delta: number): Member | undefined {
+  // 更新会员余额
+  updateBalance(id: string, delta: number): Member | undefined {
     const data = db.getDB()
     const index = data.members.findIndex(m => m.id === id)
     if (index === -1) return undefined
-    data.members[index].remainingHaircuts += delta
+    data.members[index].balance += delta
     db.setDB(data)
     return data.members[index]
   }

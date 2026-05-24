@@ -8,11 +8,27 @@
         :style="activeTab === item.id ? 'background-color: #ccfbf1;' : ''"
         @click="handleNavigate(item.route, item.id)"
       >
-        <span style="width: 24px; height: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; font-size: 20px;" :style="activeTab === item.id ? 'color: #0d9488;' : 'color: #9ca3af;'">
-          <span v-if="item.id === 'home'">🏠</span>
-          <span v-else-if="item.id === 'members'">👥</span>
-          <span v-else-if="item.id === 'recharge'">💰</span>
-          <span v-else-if="item.id === 'consume'">🎫</span>
+        <span style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px;">
+          <img
+            v-if="item.id === 'home'"
+            :src="activeTab === 'home' ? '/static/tabbar/home-active.png' : '/static/tabbar/home.png'"
+            style="width: 24px; height: 24px;"
+          />
+          <img
+            v-else-if="item.id === 'members'"
+            :src="activeTab === 'members' ? '/static/tabbar/member-active.png' : '/static/tabbar/member.png'"
+            style="width: 24px; height: 24px;"
+          />
+          <img
+            v-else-if="item.id === 'recharge'"
+            :src="activeTab === 'recharge' ? '/static/tabbar/recharge-active.png' : '/static/tabbar/recharge.png'"
+            style="width: 24px; height: 24px;"
+          />
+          <img
+            v-else-if="item.id === 'consume'"
+            :src="activeTab === 'consume' ? '/static/tabbar/consume-active.png' : '/static/tabbar/consume.png'"
+            style="width: 24px; height: 24px;"
+          />
         </span>
         <span style="font-size: 12px; font-weight: 500;" :style="activeTab === item.id ? 'color: #0d9488;' : 'color: #9ca3af;'">
           {{ item.name }}

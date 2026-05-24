@@ -56,13 +56,21 @@
           </div>
         </div>
 
-        <!-- 服务类型统计 -->
+        <!-- 服务类型分布图表 -->
         <div style="margin-bottom: 20px;" v-if="Object.keys(dayServiceStats).length > 0">
-          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务类型统计</div>
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务类型分布</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; height: 280px;">
+            <l-echart ref="dayPieRef" @ready="drawDayPie"></l-echart>
+          </div>
+        </div>
+
+        <!-- 服务类型统计列表 -->
+        <div style="margin-bottom: 20px;" v-if="Object.keys(dayServiceStats).length > 0">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务类型明细</div>
           <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
             <div v-for="(count, type) in dayServiceStats" :key="type" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
               <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ type }}</span>
-              <span style="font-size: 14px; color: #4b5563;">{{ count }} 次</span>
+              <span style="font-size: 14px; color: #4b5563;">¥{{ count }}</span>
             </div>
           </div>
         </div>
@@ -73,7 +81,7 @@
           <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
             <div v-for="(count, name) in dayHairstylistStats" :key="name" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
               <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ name }}</span>
-              <span style="font-size: 14px; color: #4b5563;">{{ count }} 次</span>
+              <span style="font-size: 14px; color: #4b5563;">¥{{ count }}</span>
             </div>
           </div>
         </div>
@@ -105,13 +113,29 @@
           </div>
         </div>
 
-        <!-- 服务类型统计 -->
+        <!-- 月度趋势图表 -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">月度趋势</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; height: 280px;">
+            <l-echart ref="monthTrendRef" @ready="drawMonthTrend"></l-echart>
+          </div>
+        </div>
+
+        <!-- 服务类型分布图表 -->
         <div style="margin-bottom: 20px;" v-if="Object.keys(monthServiceStats).length > 0">
-          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务类型统计</div>
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务类型分布</div>
+          <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; height: 280px;">
+            <l-echart ref="monthPieRef" @ready="drawMonthPie"></l-echart>
+          </div>
+        </div>
+
+        <!-- 服务类型统计列表 -->
+        <div style="margin-bottom: 20px;" v-if="Object.keys(monthServiceStats).length > 0">
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">服务类型明细</div>
           <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
             <div v-for="(count, type) in monthServiceStats" :key="type" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
               <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ type }}</span>
-              <span style="font-size: 14px; color: #4b5563;">{{ count }} 次</span>
+              <span style="font-size: 14px; color: #4b5563;">¥{{ count }}</span>
             </div>
           </div>
         </div>
@@ -122,7 +146,7 @@
           <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
             <div v-for="(count, name) in monthHairstylistStats" :key="name" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
               <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ name }}</span>
-              <span style="font-size: 14px; color: #4b5563;">{{ count }} 次</span>
+              <span style="font-size: 14px; color: #4b5563;">¥{{ count }}</span>
             </div>
           </div>
         </div>
@@ -137,21 +161,21 @@
             <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">会员总数</div>
           </div>
           <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; text-align: center;">
-            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">{{ memberStats.totalRemaining }}</div>
-            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">剩余总次数</div>
+            <div style="font-size: 30px; font-weight: 700; color: #0d9488;">¥{{ memberStats.totalBalance }}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">会员总余额</div>
           </div>
         </div>
 
-        <!-- 会员剩余次数排行 -->
+        <!-- 会员余额排行 -->
         <div style="margin-bottom: 20px;">
-          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">会员剩余次数排行</div>
+          <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">会员余额排行</div>
           <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
             <div v-for="(item, index) in remainingRanking" :key="item.id" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
               <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center;">{{ index + 1 }}</div>
                 <span style="font-size: 14px; font-weight: 500; color: #1f2937;">{{ item.name }}</span>
               </div>
-              <span :style="item.remainingHaircuts <= 3 ? 'font-weight: 600; color: #ef4444;' : 'font-size: 14px; color: #0d9488; font-weight: 600;'">剩余 {{ item.remainingHaircuts }} 次</span>
+              <span :style="item.remainingHaircuts <= 3 ? 'font-weight: 600; color: #ef4444;' : 'font-size: 14px; color: #0d9488; font-weight: 600;'">余额 ¥{{ item.remainingHaircuts }}</span>
             </div>
           </div>
         </div>
@@ -242,10 +266,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { rechargeService } from '@/services/rechargeService'
 import { consumptionService } from '@/services/consumptionService'
 import { memberService } from '@/services/memberService'
+import { useEcharts } from '@/hooks/useEcharts'
+import { useTimeDistributionChart, useServiceTypePieChart, useMonthlyTrendChart } from '@/pages/report/chartData'
 
 const activeTab = ref('day')
 const now = new Date()
@@ -330,22 +356,22 @@ const monthHairstylistStats = computed(() => {
 // 会员报表统计
 const memberStats = computed(() => {
   const members = memberService.getAll()
-  const totalRemaining = members.reduce((sum, m) => sum + m.remainingHaircuts, 0)
+  const totalBalance = members.reduce((sum, m) => sum + m.balance, 0)
 
   return {
     totalMembers: members.length,
-    totalRemaining
+    totalBalance
   }
 })
 
 const remainingRanking = computed(() => {
   const members = memberService.getAll()
   return [...members]
-    .sort((a, b) => b.remainingHaircuts - a.remainingHaircuts)
+    .sort((a, b) => b.balance - a.balance)
     .map(m => ({
       id: m.id,
       name: m.name,
-      remainingHaircuts: m.remainingHaircuts
+      remainingHaircuts: m.balance
     }))
 })
 
@@ -420,12 +446,101 @@ function confirmMonth() {
   showMonthPicker.value = false
 }
 
+// 日报图表数据
+const dayPieChartData = computed(() => {
+  return Object.entries(dayServiceStats).map(([name, value]) => ({ name, value }))
+})
+
+// 月报图表数据
+const monthPieChartData = computed(() => {
+  return Object.entries(monthServiceStats).map(([name, value]) => ({ name, value }))
+})
+
+const monthTrendData = computed(() => {
+  const date = new Date(selectedMonth.value)
+  const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  const rechargeByDay = Array(daysInMonth).fill(0)
+  const consumeByDay = Array(daysInMonth).fill(0)
+
+  const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).getTime()
+  const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59).getTime()
+
+  const monthRecharges = rechargeService.getAll().filter(r => {
+    const t = new Date(r.rechargeTime).getTime()
+    return t >= startOfMonth && t <= endOfMonth
+  })
+  const monthConsumes = consumptionService.getAll().filter(c => {
+    const t = new Date(c.consumptionTime).getTime()
+    return t >= startOfMonth && t <= endOfMonth
+  })
+
+  monthRecharges.forEach(r => {
+    const day = new Date(r.rechargeTime).getDate() - 1
+    rechargeByDay[day]++
+  })
+  monthConsumes.forEach(c => {
+    const day = new Date(c.consumptionTime).getDate() - 1
+    consumeByDay[day]++
+  })
+
+  return { rechargeByDay, consumeByDay }
+})
+
+// 初始化图表
+const dayPieOption = useServiceTypePieChart(dayPieChartData.value)
+const [dayPieRef, dayPieOptions, drawDayPie] = useEcharts(dayPieOption)
+
+const monthPieOption = useServiceTypePieChart(monthPieChartData.value)
+const [monthPieRef, monthPieOptions, drawMonthPie] = useEcharts(monthPieOption)
+
+const monthTrendOption = useMonthlyTrendChart(monthTrendData.value.rechargeByDay, monthTrendData.value.consumeByDay)
+const [monthTrendRef, monthTrendOptions, drawMonthTrend] = useEcharts(monthTrendOption)
+
+// 监听数据变化更新图表
+watch(dayPieChartData, (newData) => {
+  dayPieOption.value.series[0].data = newData
+  drawDayPie()
+})
+
+watch(monthPieChartData, (newData) => {
+  monthPieOption.value.series[0].data = newData
+  drawMonthPie()
+})
+
+watch(monthTrendData, (newData) => {
+  monthTrendOption.value.series[0].data = newData.rechargeByDay
+  monthTrendOption.value.series[1].data = newData.consumeByDay
+  drawMonthTrend()
+})
+
+watch(activeTab, (newTab) => {
+  setTimeout(() => {
+    if (newTab === 'day') {
+      drawDayPie()
+    } else if (newTab === 'month') {
+      drawMonthPie()
+      drawMonthTrend()
+    }
+  }, 100)
+})
+
 onMounted(() => {
   const date = new Date(selectedDate.value)
   dateInputValue.value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
   const monthDate = new Date(selectedMonth.value)
   monthInputValue.value = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, '0')}`
+})
+
+onShow(() => {
+  setTimeout(() => {
+    if (activeTab.value === 'day') {
+      drawDayPie()
+    } else if (activeTab.value === 'month') {
+      drawMonthPie()
+      drawMonthTrend()
+    }
+  }, 100)
 })
 
 function exportReport() {
@@ -478,7 +593,7 @@ function exportReport() {
     content += `会员总数: ${memberStats.totalMembers}\n`
     content += `剩余总次数: ${memberStats.totalRemaining}\n\n`
 
-    content += `会员剩余次数排行:\n`
+    content += `会员余额排行:\n`
     remainingRanking.slice(0, 10).forEach((item, index) => {
       content += `  ${index + 1}. ${item.name} - 剩余${item.remainingHaircuts}次\n`
     })

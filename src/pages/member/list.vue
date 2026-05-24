@@ -35,7 +35,17 @@
       <!-- Section Header -->
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
         <span style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em;">全部会员</span>
-        <span style="font-size: 12px; color: #6b7280;">共 {{ members.length }} 人</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <select
+            v-model="sortBy"
+            style="font-size: 12px; color: #0d9488; background-color: white; border: 1px solid #e5e7eb; padding: 4px 8px; border-radius: 4px;"
+          >
+            <option value="balance">余额</option>
+            <option value="created">开卡时间</option>
+            <option value="name">姓名</option>
+          </select>
+          <span style="font-size: 12px; color: #6b7280;">共 {{ members.length }} 人</span>
+        </div>
       </div>
 
       <!-- Member List -->
@@ -54,9 +64,9 @@
             <div style="font-size: 14px; color: #6b7280;">{{ member.phone }}</div>
             <div
               style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin-top: 4px;"
-              :style="member.remainingHaircuts <= 3 ? 'color: #ef4444;' : 'color: #0d9488;'"
+              :style="member.balance <= 0 ? 'color: #ef4444;' : 'color: #0d9488;'"
             >
-              剩余 {{ member.remainingHaircuts }} 次
+              余额 ¥{{ member.balance }}
             </div>
           </div>
           <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #9ca3af;">
@@ -92,16 +102,34 @@ import { memberService } from "@/services/memberService";
 import type { Member } from "@/types";
 
 const searchKeyword = ref("");
+const sortBy = ref("remaining");
 const members = ref<Member[]>([]);
 
 const displayMembers = computed(() => {
-  if (!searchKeyword.value) {
-    return members.value;
+  let result = [...members.value];
+
+  // 搜索过滤
+  if (searchKeyword.value) {
+    const kw = searchKeyword.value.toLowerCase();
+    result = result.filter((m) =>
+      m.name.toLowerCase().includes(kw) || m.phone.includes(kw)
+    );
   }
-  const kw = searchKeyword.value.toLowerCase();
-  return members.value.filter((m) =>
-    m.name.toLowerCase().includes(kw) || m.phone.includes(kw)
-  );
+
+  // 排序
+  switch (sortBy.value) {
+    case "balance":
+      result.sort((a, b) => b.balance - a.balance);
+      break;
+    case "created":
+      result.sort((a, b) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime());
+      break;
+    case "name":
+      result.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+      break;
+  }
+
+  return result;
 });
 
 const goToDetail = (id: string) => {

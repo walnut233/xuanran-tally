@@ -28,9 +28,9 @@ export const consumptionService = {
 
   // 添加消费记录
   add(consumption: Omit<Consumption, 'id' | 'consumptionTime'>): Consumption | null {
-    // 检查会员剩余次数是否足够
+    // 检查会员余额是否足够
     const member = memberService.getById(consumption.memberId)
-    if (!member || member.remainingHaircuts < consumption.usedHaircuts) {
+    if (!member || member.balance < consumption.amount) {
       return null
     }
 
@@ -43,8 +43,8 @@ export const consumptionService = {
     data.consumptions.unshift(newConsumption)
     db.setDB(data)
 
-    // 扣减会员剩余剪发次数
-    memberService.updateRemainingHaircuts(consumption.memberId, -consumption.usedHaircuts)
+    // 扣减会员余额
+    memberService.updateBalance(consumption.memberId, -consumption.amount)
 
     return newConsumption
   },
@@ -58,13 +58,14 @@ export const consumptionService = {
   },
 
   // 获取消费统计
-  getStats(startDate?: string, endDate?: string): { totalCount: number } {
+  getStats(startDate?: string, endDate?: string): { totalCount: number; totalAmount: number } {
     let consumptions = this.getAll()
     if (startDate && endDate) {
       consumptions = this.getByDateRange(startDate, endDate)
     }
     return {
-      totalCount: consumptions.reduce((sum, c) => sum + c.usedHaircuts, 0)
+      totalCount: consumptions.length,
+      totalAmount: consumptions.reduce((sum, c) => sum + c.amount, 0)
     }
   },
 
@@ -76,7 +77,7 @@ export const consumptionService = {
     }
     const stats: Record<string, number> = {}
     consumptions.forEach(c => {
-      stats[c.serviceType] = (stats[c.serviceType] || 0) + c.usedHaircuts
+      stats[c.serviceType] = (stats[c.serviceType] || 0) + c.amount
     })
     return stats
   },
@@ -90,7 +91,7 @@ export const consumptionService = {
     const stats: Record<string, number> = {}
     consumptions.forEach(c => {
       if (c.hairstylist) {
-        stats[c.hairstylist] = (stats[c.hairstylist] || 0) + c.usedHaircuts
+        stats[c.hairstylist] = (stats[c.hairstylist] || 0) + c.amount
       }
     })
     return stats

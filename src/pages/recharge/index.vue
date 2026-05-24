@@ -45,28 +45,19 @@
       <div style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); padding: 20px; margin-bottom: 20px;" v-if="selectedMember">
         <div style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px;">{{ selectedMember.name }}</div>
         <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px;">
-          剩余 <strong style="font-size: 24px; font-weight: 700;">{{ selectedMember.remainingHaircuts }}</strong> 次
+          余额 <strong style="font-size: 24px; font-weight: 700;">¥{{ selectedMember.balance }}</strong>
         </div>
       </div>
 
       <!-- 表单 -->
       <div style="background-color: white; border: 1px solid #f3f4f6; padding: 20px; margin-bottom: 16px;" v-if="selectedMember">
         <div style="margin-bottom: 20px;">
-          <label style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; display: block;">充值次数</label>
-          <input
-            v-model="form.haircutCount"
-            type="number"
-            style="width: 100%; height: 48px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 16px; outline: none; box-sizing: border-box;"
-            placeholder="请输入次数"
-          />
-        </div>
-        <div style="margin-bottom: 20px;">
           <label style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; display: block;">充值金额（元）</label>
           <input
             v-model="form.amount"
             type="number"
             style="width: 100%; height: 48px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 16px; outline: none; box-sizing: border-box;"
-            placeholder="用于报表统计"
+            placeholder="请输入金额"
           />
         </div>
         <div style="margin-bottom: 20px;">
@@ -114,10 +105,10 @@
         >
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
-            <span style="font-weight: 700; color: #0d9488; font-size: 16px;">+{{ record.haircutCount }} 次</span>
+            <span style="font-weight: 700; color: #0d9488; font-size: 16px;">+¥{{ record.amount }}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
-            <span>{{ record.paymentMethod }} · ¥{{ record.amount }}</span>
+            <span>{{ record.paymentMethod }}</span>
             <span>{{ formatTime(record.rechargeTime) }}</span>
           </div>
         </div>
@@ -188,10 +179,10 @@
         >
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
-            <span style="font-weight: 700; color: #0d9488; font-size: 16px;">+{{ record.haircutCount }} 次</span>
+            <span style="font-weight: 700; color: #0d9488; font-size: 16px;">+¥{{ record.amount }}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
-            <span>{{ record.paymentMethod }} · ¥{{ record.amount }}</span>
+            <span>{{ record.paymentMethod }}</span>
             <span>{{ formatDate(record.rechargeTime) }}</span>
           </div>
         </div>
@@ -236,7 +227,7 @@
                 <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">{{ member.name }}</div>
                 <div style="font-size: 14px; color: #6b7280;">{{ member.phone }}</div>
                 <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin-top: 4px; color: #0d9488;">
-                  剩余 {{ member.remainingHaircuts }} 次
+                  余额 ¥{{ member.balance }}
                 </div>
               </div>
             </div>
@@ -275,14 +266,13 @@ const tabs = [
 const paymentMethods = ['现金', '微信', '支付宝']
 
 const form = ref({
-  haircutCount: '',
   amount: '',
   paymentMethod: '现金',
   remark: ''
 })
 
 const canSubmit = computed(() => {
-  return selectedMember.value && form.value.haircutCount && Number(form.value.haircutCount) > 0
+  return selectedMember.value && form.value.amount && Number(form.value.amount) > 0
 })
 
 const allMembers = computed(() => memberService.getAll())
@@ -376,8 +366,7 @@ function handleSubmit() {
 
   rechargeService.add({
     memberId: selectedMember.value.id,
-    haircutCount: Number(form.value.haircutCount),
-    amount: Number(form.value.amount) || 0,
+    amount: Number(form.value.amount),
     paymentMethod: form.value.paymentMethod,
     remark: form.value.remark
   })
@@ -388,7 +377,6 @@ function handleSubmit() {
   })
 
   Object.assign(form.value, {
-    haircutCount: '',
     amount: '',
     paymentMethod: '现金',
     remark: ''
@@ -400,21 +388,42 @@ function handleSubmit() {
 }
 
 onLoad((options: any) => {
+  console.log('充值页面 onLoad, options:', options)
+  // 先尝试从URL参数获取
   if (options.memberId) {
     initialMemberId.value = options.memberId
+    const member = memberService.getById(options.memberId)
+    if (member) {
+      console.log('从URL找到会员:', member.name)
+      selectedMember.value = member
+    }
   }
 })
 
 onShow(() => {
-  // 如果有初始会员ID且还没有选中会员，自动加载
-  if (initialMemberId.value && !selectedMember.value) {
+  console.log('充值页面 onShow, initialMemberId:', initialMemberId.value)
+
+  // 尝试从全局变量获取待处理的会员ID
+  const app = getApp() as any
+  if (app.pendingMemberId) {
+    console.log('从全局变量获取到会员ID:', app.pendingMemberId)
+    initialMemberId.value = app.pendingMemberId
+    const member = memberService.getById(app.pendingMemberId)
+    if (member) {
+      console.log('找到会员:', member.name)
+      selectedMember.value = member
+    }
+    // 清除全局变量
+    app.pendingMemberId = null
+  }
+  // 如果有初始会员ID，确保选中该会员
+  else if (initialMemberId.value) {
     const member = memberService.getById(initialMemberId.value)
     if (member) {
       selectedMember.value = member
     }
-  }
-  // 如果之前选中了会员，刷新数据
-  if (selectedMember.value) {
+  } else if (selectedMember.value) {
+    // 刷新已选会员数据
     selectedMember.value = memberService.getById(selectedMember.value.id)
   }
   // 刷新筛选数据

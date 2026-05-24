@@ -49,6 +49,15 @@
           <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ serviceTypeCount }}项</span>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="handleNavigate('/pages/tierSettings/index')">
+          <span style="display: flex; align-items: center; gap: 12px;">
+            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📊</span>
+            <span style="font-size: 14px; color: #1f2937;">梯度设置</span>
+          </span>
+          <div style="flex: 1;"></div>
+          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ tierCount }}档</span>
+          <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
+        </div>
         <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="handleNavigate('/pages/hairstylist/list')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">👥</span>
@@ -124,16 +133,7 @@
       <!-- 系统设置 -->
       <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">系统设置</div>
       <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast">
-          <span style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">💰</span>
-            <span style="font-size: 14px; color: #1f2937;">充值金额预设</span>
-          </span>
-          <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">¥{{ systemSettings.rechargePresets.join('/¥') }}</span>
-          <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
-        </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showFeatureToast">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showFeatureToast('theme')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🎨</span>
             <span style="font-size: 14px; color: #1f2937;">主题设置</span>
@@ -147,7 +147,7 @@
       <!-- 其他 -->
       <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">其他</div>
       <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast('help')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">❓</span>
             <span style="font-size: 14px; color: #1f2937;">帮助与反馈</span>
@@ -155,7 +155,7 @@
           <div style="flex: 1;"></div>
           <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showFeatureToast('guide')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📖</span>
             <span style="font-size: 14px; color: #1f2937;">使用说明</span>
@@ -174,7 +174,7 @@
             已是最新
           </span>
         </div>
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showFeatureToast">
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showFeatureToast('about')">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">ℹ️</span>
             <span style="font-size: 14px; color: #1f2937;">关于我们</span>
@@ -268,6 +268,94 @@
         </div>
       </div>
     </div>
+
+    <!-- 主题设置弹窗 -->
+    <div v-if="showThemeDialogFlag" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: flex-end;" @click.self="closeThemeDialog">
+      <div style="background-color: white; width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+          <button style="color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer;" @click="closeThemeDialog">关闭</button>
+          <span style="font-weight: 500; color: #1f2937;">选择主题</span>
+          <div style="width: 40px;"></div>
+        </div>
+        <div style="padding: 20px;">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div
+              v-for="theme in ['青色主题', '蓝色主题', '紫色主题']"
+              :key="theme"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background-color: #f9fafb; border: 1px solid #f3f4f6; cursor: pointer;"
+              :style="systemSettings.theme === theme ? 'border-color: #0d9488;' : ''"
+              @click="selectTheme(theme)"
+            >
+              <span style="font-size: 14px; color: #1f2937;">{{ theme }}</span>
+              <span v-if="systemSettings.theme === theme" style="color: #0d9488; font-size: 18px;">✓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 简单页面弹窗 -->
+    <div v-if="showSimplePageFlag" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: center; justify-content: center;">
+      <div style="background-color: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; overflow: hidden;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+          <span style="font-weight: 500; color: #1f2937;">
+            {{ simplePageType === 'help' ? '帮助与反馈' : simplePageType === 'guide' ? '使用说明' : '关于我们' }}
+          </span>
+          <button style="color: #6b7280; font-size: 24px; background: none; border: none; cursor: pointer;" @click="closeSimplePage">×</button>
+        </div>
+        <div style="padding: 20px; overflow-y: auto;">
+          <div v-if="simplePageType === 'about'" style="text-align: center;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; margin: 0 auto 16px auto;">💇</div>
+            <h2 style="font-size: 20px; font-weight: 600; color: #1f2937; margin: 0 0 4px 0;">理发店记卡系统</h2>
+            <p style="font-size: 14px; color: #6b7280; margin: 0 0 16px 0;">版本 1.0.0</p>
+            <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
+              一款专为理发店设计的单机版会员记卡系统，方便管理会员、记录充值和消费。
+            </p>
+          </div>
+
+          <div v-if="simplePageType === 'guide'">
+            <h3 style="font-size: 16px; font-weight: 600; color: #1f2937; margin: 0 0 12px 0;">快速入门</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div>
+                <p style="font-size: 14px; font-weight: 500; color: #1f2937; margin: 0 0 4px 0;">1. 添加会员</p>
+                <p style="font-size: 13px; color: #6b7280; margin: 0;">在会员列表点击"+"按钮添加新会员</p>
+              </div>
+              <div>
+                <p style="font-size: 14px; font-weight: 500; color: #1f2937; margin: 0 0 4px 0;">2. 会员充值</p>
+                <p style="font-size: 13px; color: #6b7280; margin: 0;">在充值页面选择会员，输入充值次数和金额</p>
+              </div>
+              <div>
+                <p style="font-size: 14px; font-weight: 500; color: #1f2937; margin: 0 0 4px 0;">3. 会员消费</p>
+                <p style="font-size: 13px; color: #6b7280; margin: 0;">在消费页面选择会员，选择服务类型完成消费</p>
+              </div>
+              <div>
+                <p style="font-size: 14px; font-weight: 500; color: #1f2937; margin: 0 0 4px 0;">4. 查看报表</p>
+                <p style="font-size: 13px; color: #6b7280; margin: 0;">在报表页面查看每日、每月的经营数据</p>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="simplePageType === 'help'">
+            <h3 style="font-size: 16px; font-weight: 600; color: #1f2937; margin: 0 0 12px 0;">常见问题</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div>
+                <p style="font-size: 14px; font-weight: 500; color: #1f2937; margin: 0 0 4px 0;">如何备份数据？</p>
+                <p style="font-size: 13px; color: #6b7280; margin: 0;">在设置页面点击"立即备份"按钮</p>
+              </div>
+              <div>
+                <p style="font-size: 14px; font-weight: 500; color: #1f2937; margin: 0 0 4px 0;">数据安全吗？</p>
+                <p style="font-size: 13px; color: #6b7280; margin: 0;">所有数据都保存在本地，不会上传到服务器</p>
+              </div>
+            </div>
+            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #f3f4f6;">
+              <p style="font-size: 14px; color: #6b7280; text-align: center;">
+                如有其他问题，请联系开发者
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -283,6 +371,7 @@ const systemSettings = ref<SystemSettings>(settingsService.getSystemSettings())
 
 // 计数
 const serviceTypeCount = computed(() => serviceTypeService.getAll().length)
+const tierCount = computed(() => systemSettings.value.memberTiers?.length || 0)
 const hairstylistCount = computed(() => hairstylistService.getAll().length)
 
 // 备份相关
@@ -325,11 +414,49 @@ function handleNavigate(path: string) {
   }
 }
 
-function showFeatureToast() {
+function showFeatureToast(feature?: string) {
+  if (feature === 'theme') {
+    showThemeDialog()
+    return
+  }
+  if (feature === 'help' || feature === 'about' || feature === 'guide') {
+    showSimplePage(feature)
+    return
+  }
   uni.showToast({
     title: '功能开发中',
     icon: 'none'
   })
+}
+
+// 主题设置
+const showThemeDialogFlag = ref(false)
+
+function showThemeDialog() {
+  showThemeDialogFlag.value = true
+}
+
+function closeThemeDialog() {
+  showThemeDialogFlag.value = false
+}
+
+function selectTheme(theme: string) {
+  systemSettings.value = settingsService.saveSystemSettings({ theme })
+  closeThemeDialog()
+  uni.showToast({ title: '已切换主题', icon: 'success' })
+}
+
+// 简单页面展示
+const showSimplePageFlag = ref(false)
+const simplePageType = ref('')
+
+function showSimplePage(type: string) {
+  simplePageType.value = type
+  showSimplePageFlag.value = true
+}
+
+function closeSimplePage() {
+  showSimplePageFlag.value = false
 }
 
 // 店铺设置编辑

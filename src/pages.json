@@ -203,6 +203,14 @@
 			}
 		},
 		{
+			"path": "pages/tierSettings/index",
+			"type": "page",
+			"layout": "default",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/unocssDemo/index",
 			"type": "page",
 			"layout": "theme",

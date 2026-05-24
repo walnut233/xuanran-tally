@@ -8,10 +8,10 @@ function generateId(): string {
 
 // 默认服务类型
 const defaultServiceTypes: Omit<ServiceType, 'id'>[] = [
-  { name: '剪发', haircutCost: 1, defaultHaircuts: 1 },
-  { name: '染发', haircutCost: 2, defaultHaircuts: 2 },
-  { name: '烫发', haircutCost: 3, defaultHaircuts: 3 },
-  { name: '护理', haircutCost: 1, defaultHaircuts: 1 }
+  { name: '剪发' },
+  { name: '染发' },
+  { name: '烫发' },
+  { name: '护理' }
 ]
 
 export const serviceTypeService = {
@@ -26,11 +26,10 @@ export const serviceTypeService = {
       }))
       db.setDB(data)
     }
-    // 确保每个服务类型都有两个字段
+    // 只返回需要的字段
     return data.serviceTypes.map(st => ({
-      ...st,
-      defaultHaircuts: st.defaultHaircuts ?? st.haircutCost,
-      haircutCost: st.haircutCost ?? st.defaultHaircuts ?? 1
+      id: st.id,
+      name: st.name
     }))
   },
 
@@ -39,9 +38,7 @@ export const serviceTypeService = {
     const data = db.getDB()
     const newServiceType: ServiceType = {
       ...serviceType,
-      id: generateId(),
-      defaultHaircuts: serviceType.defaultHaircuts ?? serviceType.haircutCost,
-      haircutCost: serviceType.haircutCost ?? serviceType.defaultHaircuts ?? 1
+      id: generateId()
     }
     data.serviceTypes.push(newServiceType)
     db.setDB(data)
@@ -53,14 +50,7 @@ export const serviceTypeService = {
     const data = db.getDB()
     const index = data.serviceTypes.findIndex(st => st.id === id)
     if (index === -1) return undefined
-    const updateData = { ...serviceType }
-    if (updateData.haircutCost !== undefined) {
-      updateData.defaultHaircuts = updateData.defaultHaircuts ?? updateData.haircutCost
-    }
-    if (updateData.defaultHaircuts !== undefined) {
-      updateData.haircutCost = updateData.haircutCost ?? updateData.defaultHaircuts
-    }
-    data.serviceTypes[index] = { ...data.serviceTypes[index], ...updateData }
+    data.serviceTypes[index] = { ...data.serviceTypes[index], ...serviceType }
     db.setDB(data)
     return data.serviceTypes[index]
   },

@@ -28,6 +28,7 @@ interface NavigateToOptions {
        "/pages/routerDemo/page3" |
        "/pages/serviceType/list" |
        "/pages/settings/index" |
+       "/pages/tierSettings/index" |
        "/pages/unocssDemo/index" |
        "/pages/wotUiDemo/index" |
        "/pages-sub/subDemo/index" |

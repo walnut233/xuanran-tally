@@ -32,16 +32,10 @@
             style="flex: 1; height: 48px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 14px; outline: none; box-sizing: border-box"
             placeholder="服务名称"
           />
-          <input
-            v-model="form.haircutCost"
-            type="number"
-            style="width: 100px; height: 48px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 16px; font-size: 14px; outline: none; box-sizing: border-box"
-            placeholder="消耗次数"
-          />
         </div>
         <button
           style="width: 100%; height: 48px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white; font-size: 16px; font-weight: 600; border: none; cursor: pointer"
-          :disabled="!form.name || !form.haircutCost"
+          :disabled="!form.name"
           @click="handleAdd"
         >
           {{ editingId ? '保存修改' : '添加' }}
@@ -58,8 +52,7 @@
             style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6"
           >
             <div style="flex: 1">
-              <div style="font-size: 14px; font-weight: 500; color: #1f2937; margin-bottom: 4px">{{ item.name }}</div>
-              <div style="font-size: 12px; color: #6b7280">消耗 {{ item.haircutCost }} 次</div>
+              <div style="font-size: 14px; font-weight: 500; color: #1f2937">{{ item.name }}</div>
             </div>
             <div style="display: flex; gap: 8px">
               <button
@@ -95,8 +88,7 @@ const serviceTypes = ref<ServiceType[]>([])
 const editingId = ref<string | null>(null)
 
 const form = ref({
-  name: '',
-  haircutCost: ''
+  name: ''
 })
 
 function goBack() {
@@ -106,18 +98,15 @@ function goBack() {
 function startEdit(item: ServiceType) {
   editingId.value = item.id
   form.value.name = item.name
-  form.value.haircutCost = String(item.haircutCost)
 }
 
 function handleAdd() {
-  if (!form.value.name || !form.value.haircutCost) return
+  if (!form.value.name) return
 
   if (editingId.value) {
     // 编辑模式
     serviceTypeService.update(editingId.value, {
-      name: form.value.name,
-      haircutCost: Number(form.value.haircutCost),
-      defaultHaircuts: Number(form.value.haircutCost)
+      name: form.value.name
     })
     uni.showToast({
       title: '修改成功',
@@ -126,9 +115,7 @@ function handleAdd() {
   } else {
     // 添加模式
     serviceTypeService.add({
-      name: form.value.name,
-      haircutCost: Number(form.value.haircutCost),
-      defaultHaircuts: Number(form.value.haircutCost)
+      name: form.value.name
     })
     uni.showToast({
       title: '添加成功',
@@ -138,7 +125,6 @@ function handleAdd() {
 
   // 重置表单
   form.value.name = ''
-  form.value.haircutCost = ''
   editingId.value = null
   refreshList()
 }
