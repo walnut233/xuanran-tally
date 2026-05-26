@@ -14,8 +14,12 @@ node_modules
 dist
 *.local
 
-# Claude Code settings
+# uni-app
+unpackage
+
+# Claude Code
 .claude
+.codegraph
 
 # Editor directories and files
 .idea

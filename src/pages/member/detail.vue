@@ -196,14 +196,17 @@ const memberTier = computed(() => {
 const allHistory = computed(() => {
   if (!memberId.value) return []
 
-  const recharges = rechargeService.getByMemberId(memberId.value).map(r => ({
-    id: r.id,
-    type: 'recharge' as const,
-    title: '充值',
-    detail: `${formatDate(r.rechargeTime)} · ${r.paymentMethod}`,
-    amount: `+¥${r.amount}`,
-    time: r.rechargeTime
-  }))
+  const recharges = rechargeService.getByMemberId(memberId.value).map(r => {
+    const isOpeningCard = r.paymentMethod === '开卡充值' || (r.remark && r.remark.includes('开卡'))
+    return {
+      id: r.id,
+      type: 'recharge' as const,
+      title: isOpeningCard ? '开卡充值' : '充值',
+      detail: `${formatDate(r.rechargeTime)} · ${isOpeningCard ? '开卡' : r.paymentMethod}`,
+      amount: `+¥${r.amount}`,
+      time: r.rechargeTime
+    }
+  })
 
   const consumes = consumptionService.getByMemberId(memberId.value).map(c => ({
     id: c.id,
@@ -242,12 +245,18 @@ function formatDate(timeStr: string) {
   yesterday.setDate(yesterday.getDate() - 1)
   const recordDate = new Date(time.getFullYear(), time.getMonth(), time.getDate())
 
+  const hours = String(time.getHours()).padStart(2, '0')
+  const minutes = String(time.getMinutes()).padStart(2, '0')
+  const timePart = `${hours}:${minutes}`
+
   if (recordDate.getTime() === today.getTime()) {
-    return `今天 ${time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`
+    return `今天 ${timePart}`
   } else if (recordDate.getTime() === yesterday.getTime()) {
-    return `昨天 ${time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`
+    return `昨天 ${timePart}`
   } else {
-    return time.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    const month = time.getMonth() + 1
+    const day = time.getDate()
+    return `${month}月${day}日 ${timePart}`
   }
 }
 

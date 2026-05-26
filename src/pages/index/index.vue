@@ -143,6 +143,7 @@ import { consumptionService } from '@/services/consumptionService'
 import { settingsService, type ShopSettings } from '@/services/settingsService'
 
 const shopSettings = ref<ShopSettings>(settingsService.getShopSettings())
+const refreshKey = ref(0)
 
 const quickActions = [
   { id: 'report', name: '报表', icon: 'report', route: '/pages/report/index' },
@@ -151,6 +152,8 @@ const quickActions = [
 
 // 获取今日统计数据
 const todayStats = computed(() => {
+  // 依赖 refreshKey 来强制刷新
+  refreshKey.value
   const today = new Date().toDateString()
   const todayRecharges = rechargeService.getAll().filter(r =>
     new Date(r.rechargeTime).toDateString() === today
@@ -170,6 +173,8 @@ const todayStats = computed(() => {
 
 // 获取最近活动
 const recentActivity = computed(() => {
+  // 依赖 refreshKey 来强制刷新
+  refreshKey.value
   const activities: any[] = []
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -183,11 +188,12 @@ const recentActivity = computed(() => {
     return recordDateOnly.getTime() === today.getTime() || recordDateOnly.getTime() === yesterday.getTime()
   }).map(r => {
     const member = memberService.getById(r.memberId)
+    const isOpeningCard = r.paymentMethod === '开卡充值' || (r.remark && r.remark.includes('开卡'))
     return {
       id: 'r-' + r.id,
       type: 'recharge' as const,
       name: member?.name || '未知会员',
-      action: '充值',
+      action: isOpeningCard ? '开卡充值' : '充值',
       detail: `+¥${r.amount}`,
       time: formatTime(r.rechargeTime),
       rawTime: r.rechargeTime
@@ -249,5 +255,7 @@ const handleAction = (action: any) => {
 
 onShow(() => {
   shopSettings.value = settingsService.getShopSettings()
+  // 强制刷新所有数据
+  refreshKey.value++
 })
 </script>

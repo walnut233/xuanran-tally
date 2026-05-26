@@ -108,7 +108,7 @@
             <span style="font-weight: 700; color: #0d9488; font-size: 16px;">+¥{{ record.amount }}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
-            <span>{{ record.paymentMethod }}</span>
+            <span>{{ record.paymentMethod === '开卡充值' ? '开卡' : record.paymentMethod }}</span>
             <span>{{ formatTime(record.rechargeTime) }}</span>
           </div>
         </div>
@@ -120,60 +120,9 @@
 
     <!-- 充值历史 Tab -->
     <div style="padding: 0 20px; padding-top: 16px; padding-bottom: 120px;" v-else>
-      <!-- 时间范围筛选 -->
-      <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;">
-        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">时间范围</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-          <div>
-            <label style="font-size: 12px; color: #6b7280; margin-bottom: 4px; display: block;">开始日期</label>
-            <input
-              v-model="filterStartDate"
-              type="date"
-              style="width: 100%; height: 40px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 12px; font-size: 14px; outline: none; box-sizing: border-box;"
-            />
-          </div>
-          <div>
-            <label style="font-size: 12px; color: #6b7280; margin-bottom: 4px; display: block;">结束日期</label>
-            <input
-              v-model="filterEndDate"
-              type="date"
-              style="width: 100%; height: 40px; background-color: #f9fafb; border: 1px solid #f3f4f6; padding: 0 12px; font-size: 14px; outline: none; box-sizing: border-box;"
-            />
-          </div>
-        </div>
-        <div style="display: flex; gap: 10px;">
-          <button
-            style="flex: 1; height: 40px; background-color: #14b8a6; color: white; font-size: 14px; font-weight: 500; border: none; cursor: pointer;"
-            @click="applyFilter"
-          >
-            筛选
-          </button>
-          <button
-            style="flex: 1; height: 40px; background-color: #f3f4f6; color: #1f2937; font-size: 14px; font-weight: 500; border: none; cursor: pointer;"
-            @click="resetFilter"
-          >
-            重置
-          </button>
-        </div>
-      </div>
-
-      <!-- 统计信息 -->
-      <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;" v-if="filteredRecharges.length > 0">
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; text-align: center;">
-          <div>
-            <div style="font-size: 24px; font-weight: 700; color: #0d9488;">{{ filterStats.totalCount }}</div>
-            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">充值笔数</div>
-          </div>
-          <div>
-            <div style="font-size: 24px; font-weight: 700; color: #0d9488;">¥{{ filterStats.totalAmount }}</div>
-            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">充值金额</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 10px;" v-if="filteredRecharges.length > 0">
+      <div style="display: flex; flex-direction: column; gap: 10px;" v-if="allRecharges.length > 0">
         <div
-          v-for="record in filteredRecharges"
+          v-for="record in allRecharges"
           :key="record.id"
           style="background-color: white; border: 1px solid #f3f4f6; padding: 16px;"
         >
@@ -182,7 +131,7 @@
             <span style="font-weight: 700; color: #0d9488; font-size: 16px;">+¥{{ record.amount }}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
-            <span>{{ record.paymentMethod }}</span>
+            <span>{{ record.paymentMethod === '开卡充值' ? '开卡' : record.paymentMethod }}</span>
             <span>{{ formatDate(record.rechargeTime) }}</span>
           </div>
         </div>
@@ -247,7 +196,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { memberService } from '@/services/memberService'
 import { rechargeService } from '@/services/rechargeService'
 import type { Member } from '@/types'
@@ -257,6 +206,7 @@ const showMemberSelector = ref(false)
 const memberSearchKeyword = ref('')
 const selectedMember = ref<Member | null>(null)
 const initialMemberId = ref<string | null>(null)
+const refreshKey = ref(0)
 
 const tabs = [
   { id: 'quick', name: '快速充值' },
@@ -286,56 +236,18 @@ const filteredMembers = computed(() => {
 })
 
 const todayRecharges = computed(() => {
+  // 依赖 refreshKey 来强制刷新
+  refreshKey.value
   const today = new Date().toDateString()
   return rechargeService.getAll().filter(r => {
     const rechargeDate = new Date(r.rechargeTime).toDateString()
     return rechargeDate === today
-  }).reverse()
+  }).sort((a, b) => new Date(b.rechargeTime).getTime() - new Date(a.rechargeTime).getTime())
 })
 
 const allRecharges = computed(() => {
-  return [...rechargeService.getAll()].reverse()
+  return [...rechargeService.getAll()].sort((a, b) => new Date(b.rechargeTime).getTime() - new Date(a.rechargeTime).getTime())
 })
-
-// 筛选相关
-const filterStartDate = ref('')
-const filterEndDate = ref('')
-const filteredRecharges = ref([...rechargeService.getAll()].reverse())
-
-const filterStats = computed(() => {
-  return {
-    totalCount: filteredRecharges.value.length,
-    totalAmount: filteredRecharges.value.reduce((sum, r) => sum + Number(r.amount), 0)
-  }
-})
-
-function applyFilter() {
-  let records = [...rechargeService.getAll()].reverse()
-
-  if (filterStartDate.value) {
-    const startDate = new Date(filterStartDate.value)
-    startDate.setHours(0, 0, 0, 0)
-    records = records.filter(r => new Date(r.rechargeTime) >= startDate)
-  }
-
-  if (filterEndDate.value) {
-    const endDate = new Date(filterEndDate.value)
-    endDate.setHours(23, 59, 59, 999)
-    records = records.filter(r => new Date(r.rechargeTime) <= endDate)
-  }
-
-  filteredRecharges.value = records
-  uni.showToast({
-    title: `找到${records.length}条记录`,
-    icon: 'success'
-  })
-}
-
-function resetFilter() {
-  filterStartDate.value = ''
-  filterEndDate.value = ''
-  filteredRecharges.value = [...rechargeService.getAll()].reverse()
-}
 
 function getMemberName(memberId: string) {
   const member = memberService.getById(memberId)
@@ -346,14 +258,20 @@ function formatTime(timeStr: string) {
   const time = new Date(timeStr)
   const today = new Date()
   if (time.toDateString() === today.toDateString()) {
-    return time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+    const hours = String(time.getHours()).padStart(2, '0')
+    const minutes = String(time.getMinutes()).padStart(2, '0')
+    return `${hours}:${minutes}`
   }
   return '昨天'
 }
 
 function formatDate(timeStr: string) {
   const time = new Date(timeStr)
-  return time.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  const month = time.getMonth() + 1
+  const day = time.getDate()
+  const hours = String(time.getHours()).padStart(2, '0')
+  const minutes = String(time.getMinutes()).padStart(2, '0')
+  return `${month}月${day}日 ${hours}:${minutes}`
 }
 
 function selectMember(member: Member) {
@@ -385,6 +303,9 @@ function handleSubmit() {
   if (selectedMember.value) {
     selectedMember.value = memberService.getById(selectedMember.value.id)
   }
+
+  // 强制刷新今日充值记录
+  refreshKey.value++
 }
 
 onLoad((options: any) => {
@@ -426,8 +347,13 @@ onShow(() => {
     // 刷新已选会员数据
     selectedMember.value = memberService.getById(selectedMember.value.id)
   }
-  // 刷新筛选数据
-  filteredRecharges.value = [...rechargeService.getAll()].reverse()
+})
+
+// 监听tab切换，刷新数据
+watch(activeTab, (newTab) => {
+  if (newTab === 'history') {
+    // tab切换时可以在这里添加刷新逻辑
+  }
 })
 </script>
 

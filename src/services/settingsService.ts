@@ -22,7 +22,7 @@ export interface SystemSettings {
 
 // 默认设置
 const DEFAULT_SHOP_SETTINGS: ShopSettings = {
-  name: '渲染造型',
+  name: '渲染记账',
   phone: '138-8888-8888',
   address: '北京市朝阳区...'
 }
@@ -136,16 +136,59 @@ export const settingsService = {
   // 创建备份
   createBackup(): { success: boolean; timestamp: string; message?: string } {
     try {
-      const data = db.getDB()
+      const fullData = db.getDB()
       const shopSettings = this.getShopSettings()
       const systemSettings = this.getSystemSettings()
 
+      // 只备份实际使用的字段
       const backup = {
         version: '1.0',
         timestamp: new Date().toISOString(),
-        data,
-        shopSettings,
-        systemSettings
+        data: {
+          members: fullData.members.map((m: any) => ({
+            id: m.id,
+            name: m.name,
+            phone: m.phone,
+            gender: m.gender,
+            birthday: m.birthday,
+            createDate: m.createDate,
+            balance: m.balance,
+            tierId: m.tierId,
+            remark: m.remark
+          })),
+          recharges: fullData.recharges.map((r: any) => ({
+            id: r.id,
+            memberId: r.memberId,
+            amount: r.amount,
+            paymentMethod: r.paymentMethod,
+            rechargeTime: r.rechargeTime,
+            remark: r.remark
+          })),
+          consumptions: fullData.consumptions.map((c: any) => ({
+            id: c.id,
+            memberId: c.memberId,
+            serviceType: c.serviceType,
+            amount: c.amount,
+            hairstylist: c.hairstylist,
+            consumptionTime: c.consumptionTime,
+            remark: c.remark
+          })),
+          serviceTypes: fullData.serviceTypes.map((s: any) => ({
+            id: s.id,
+            name: s.name
+          })),
+          hairstylists: fullData.hairstylists.map((h: any) => ({
+            id: h.id,
+            name: h.name
+          }))
+        },
+        shopSettings: {
+          name: shopSettings.name
+        },
+        systemSettings: {
+          theme: systemSettings.theme,
+          memberTiers: systemSettings.memberTiers
+        }
       }
 
       const timestamp = new Date().getTime().toString()
@@ -254,12 +297,59 @@ export const settingsService = {
 
   // 导出数据为JSON
   exportToJSON(): string {
+    const fullData = db.getDB()
+    const shopSettings = this.getShopSettings()
+    const systemSettings = this.getSystemSettings()
+
+    // 只导出实际使用的字段
     const backup = {
       version: '1.0',
       exportTime: new Date().toISOString(),
-      data: db.getDB(),
-      shopSettings: this.getShopSettings(),
-      systemSettings: this.getSystemSettings()
+      data: {
+        members: fullData.members.map((m: any) => ({
+          id: m.id,
+          name: m.name,
+          phone: m.phone,
+          gender: m.gender,
+          birthday: m.birthday,
+          createDate: m.createDate,
+          balance: m.balance,
+          tierId: m.tierId,
+          remark: m.remark
+        })),
+        recharges: fullData.recharges.map((r: any) => ({
+          id: r.id,
+          memberId: r.memberId,
+          amount: r.amount,
+          paymentMethod: r.paymentMethod,
+          rechargeTime: r.rechargeTime,
+          remark: r.remark
+        })),
+        consumptions: fullData.consumptions.map((c: any) => ({
+          id: c.id,
+          memberId: c.memberId,
+          serviceType: c.serviceType,
+          amount: c.amount,
+          hairstylist: c.hairstylist,
+          consumptionTime: c.consumptionTime,
+          remark: c.remark
+        })),
+        serviceTypes: fullData.serviceTypes.map((s: any) => ({
+          id: s.id,
+          name: s.name
+        })),
+        hairstylists: fullData.hairstylists.map((h: any) => ({
+          id: h.id,
+          name: h.name
+        }))
+      },
+      shopSettings: {
+        name: shopSettings.name
+      },
+      systemSettings: {
+        theme: systemSettings.theme,
+        memberTiers: systemSettings.memberTiers
+      }
     }
     return JSON.stringify(backup, null, 2)
   },
@@ -273,15 +363,29 @@ export const settingsService = {
         return { success: false, message: '无效的备份文件格式' }
       }
 
-      // 恢复数据库
-      db.setDB(backup.data)
+      // 确保导入的数据结构完整
+      const importData = {
+        members: backup.data.members || [],
+        recharges: backup.data.recharges || [],
+        consumptions: backup.data.consumptions || [],
+        serviceTypes: backup.data.serviceTypes || [],
+        hairstylists: backup.data.hairstylists || []
+      }
 
-      // 恢复设置
+      // 恢复数据库
+      db.setDB(importData)
+
+      // 恢复设置，只恢复实际使用的字段
       if (backup.shopSettings) {
-        this.saveShopSettings(backup.shopSettings)
+        this.saveShopSettings({
+          name: backup.shopSettings.name
+        })
       }
       if (backup.systemSettings) {
-        this.saveSystemSettings(backup.systemSettings)
+        this.saveSystemSettings({
+          theme: backup.systemSettings.theme,
+          memberTiers: backup.systemSettings.memberTiers
+        })
       }
 
       return { success: true }

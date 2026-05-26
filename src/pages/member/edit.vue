@@ -84,7 +84,7 @@
         <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">账户信息</div>
         <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden;">
           <div v-if="!isEdit" style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showTierSelector = true">
-            <span style="width: 80px; font-size: 14px; font-weight: 500; color: #1f2937; flex-shrink: 0;">会员梯度</span>
+            <span style="width: 80px; font-size: 14px; font-weight: 500; color: #1f2937; flex-shrink: 0;">会员梯度 <span style="color: #ef4444;">*</span></span>
             <span v-if="selectedTier" style="flex: 1; font-size: 14px; color: #1f2937;">{{ selectedTier.name }} (充¥{{ selectedTier.initialRecharge }})</span>
             <span v-else style="flex: 1; font-size: 14px; color: #9ca3af;">选择会员梯度</span>
             <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
@@ -200,7 +200,17 @@ const form = ref({
 })
 
 const canSubmit = computed(() => {
-  return form.value.name && form.value.phone && form.value.phone.length === 11
+  if (isEdit.value) {
+    // 编辑模式：姓名和手机号必填
+    return form.value.name && form.value.phone && form.value.phone.length === 11
+  } else {
+    // 新建模式：姓名、手机号、梯度必填，且初始余额 > 0
+    return form.value.name &&
+           form.value.phone &&
+           form.value.phone.length === 11 &&
+           selectedTier.value &&
+           Number(form.value.balance) > 0
+  }
 })
 
 function goBack() {
@@ -219,7 +229,35 @@ function selectTier(tier: MemberTier) {
 }
 
 function handleSubmit() {
-  if (!canSubmit.value) return
+  if (!canSubmit.value) {
+    if (!isEdit.value && !selectedTier.value) {
+      uni.showToast({
+        title: '请选择会员梯度',
+        icon: 'none'
+      })
+    } else if (!form.value.name) {
+      uni.showToast({
+        title: '请输入会员姓名',
+        icon: 'none'
+      })
+    } else if (!form.value.phone) {
+      uni.showToast({
+        title: '请输入手机号',
+        icon: 'none'
+      })
+    } else if (form.value.phone.length !== 11) {
+      uni.showToast({
+        title: '手机号格式不正确',
+        icon: 'none'
+      })
+    } else if (!isEdit.value && Number(form.value.balance) <= 0) {
+      uni.showToast({
+        title: '初始余额必须大于0',
+        icon: 'none'
+      })
+    }
+    return
+  }
 
   if (isEdit.value && memberId.value) {
     // 编辑模式 - 不修改梯度
@@ -241,22 +279,22 @@ function handleSubmit() {
       }, 500)
     }
   } else {
-    // 新增模式
+    // 新增模式 - 初始余额设为0，通过充值记录来增加
     const newMember = memberService.add({
       name: form.value.name,
       phone: form.value.phone,
       gender: form.value.gender,
       birthday: form.value.birthday,
-      balance: Number(form.value.balance) || 0,
+      balance: 0,
       tierId: selectedTier.value?.id,
       remark: form.value.remark
     })
 
-    // 如果有初始余额，创建一条充值记录
+    // 如果有初始余额，创建一条充值记录（充值服务会自动增加余额）
     if (form.value.balance > 0) {
       rechargeService.add({
         memberId: newMember.id,
-        amount: form.value.balance,
+        amount: Number(form.value.balance) || 0,
         paymentMethod: '开卡充值',
         remark: selectedTier.value ? `${selectedTier.value.name}开卡` : '开卡充值'
       })

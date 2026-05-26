@@ -1,340 +1,167 @@
+
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
 # 理发店计费记卡系统 - 项目设计文档
 
 ## 1. 项目概述
 
-### 1.1 项目背景
-为实体理发店开发一套内部使用的单机版计费记卡管理系统，用于会员管理、消费记录、充值管理及简单报表统计。系统采用uni-plus脚手架进行开发，优先支持安卓端，后续可扩展至iOS和小程序平台。
+为实体理发店开发的单机版计费记卡管理系统，用于会员管理、消费记录、充值管理及报表统计。
 
-### 1.2 项目目标
-- 实现会员信息的完整建档和管理
-- 支持会员充值和消费记录
-- 提供简单易用的消费记账功能
-- 生成基础经营报表
-- 确保数据本地存储安全可靠
-- 界面简洁，操作流畅，适合单机使用
+- **技术栈**: uni-plus (Uniapp + Vue3 + TS + Vite + Pinia + Unocss + WotUi)
+- **数据存储**: uni.setStorageSync (Local Storage)
+- **目标平台**: Android (优先), iOS, 小程序 (后续)
 
-### 1.3 技术栈
-- **基础框架**: uni-plus (Uniapp + Vue3 + TS + Vite + Pinia + Unocss + WotUi)
-- **开发工具**: VS Code + HBuilderX
-- **数据存储**: SQLite/Local Storage (单机应用)
-- **打包平台**: Android (优先), iOS, 小程序(后续)
-- **UI组件库**: WotUi + Uni-app内置组件
+## 2. Common Development Commands
 
-## 2. 功能需求
+```bash
+# Install dependencies (uses pnpm)
+pnpm install
 
-### 2.1 会员建档模块
-- **会员信息录入**:
-  - 姓名、手机号（唯一标识）
-  - 性别、生日等基本信息
-  - 开卡日期、备注
-  - 剩余剪发次数
-- **会员信息管理**:
-  - 会员列表展示（支持姓名搜索、手机尾号搜索、排序）
-  - 会员信息编辑
+# Development
+pnpm dev:h5              # H5 development
+pnpm dev:mp-weixin       # WeChat mini program
+pnpm dev:custom          # Custom platform selection
 
-### 2.2 充值记录模块
-- **充值功能**:
-  - 选择会员进行充值，可通过姓名或手机尾号搜索
-  - 充值剪发次数输入
-  - 充值金额输入（仅用于报表统计，不关联会员余额）
-  - 支付方式选择（现金、微信、支付宝等）
-  - 充值时间自动记录
-  - 充值备注
-- **充值记录查询**:
-  - 按会员查询充值记录，查询剪发次数增减详情
-  - 按时间范围查询充值记录
-  - 充值记录导出（可选）
+# Build
+pnpm build:h5            # Build for H5
+pnpm build:mp-weixin     # Build for WeChat mini program
 
-### 2.3 消费记账模块
-- **消费记录**:
-  - 选择会员进行消费，可通过姓名或手机尾号搜索
-  - 服务类型选择（剪发、染发、烫发等）
-  - 每次服务消耗的剪发次数设置
-  - 消费时间自动记录
-  - 美发师选择
-  - 消费备注
-- **快速消费**:
-  - 常用服务类型快捷选择
-  - 历史消费记录快速复制
+# Code quality
+pnpm type-check          # TypeScript type checking
+pnpm cz                  # Commit with commitizen
 
-### 2.4 简单报表模块
-- **日报表**:
-  - 当日总充值次数
-  - 当日总充值金额
-  - 当日总消费次数
-  - 按服务类型统计
-  - 按美发师统计
-- **月报表**:
-  - 月度总充值次数
-  - 月度总充值金额
-  - 月度总消费次数
-  - 会员活跃度统计
-  - 服务类型热度分析
-- **会员报表**:
-  - 会员剩余次数统计
-  - 会员累计充值金额统计
-  - 消费频次分析
-  - 充值次数排名
+# Lint (runs automatically on commit via husky)
+# prettier, eslint, stylelint all configured
+```
 
-## 3. 系统架构设计
+**Environment Requirements**: Node &gt;= 18, pnpm &gt;= 7.30
 
-### 3.1 技术架构
-┌─────────────────────────────────────────────────────────────┐
-│                      应用层 (uni-plus)                       │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌───────┐│
-│  │  会员管理   │  │  充值管理   │  │  消费记账   │  │ 报表  ││
-│  └─────────────┘  └─────────────┘  └─────────────┘  └───────┘│
-└─────────────────────────────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      业务逻辑层                              │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌───────┐│
-│  │会员服务层│  │充值服务层│  │消费服务层│  │报表服务层││
-│  └─────────────┘  └─────────────┘  └─────────────┘  └───────┘│
-└─────────────────────────────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      数据访问层                              │
-│  ┌─────────────────────────────────────────────────────────┐│
-│  │                  SQLite/Local Storage                   ││
-│  └─────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────┘
+## 3. High-Level Architecture
 
-### 3.2 模块划分
-- **core/**: 核心功能模块
-- **views/**: 页面视图
-- **stores/**: Pinia状态管理
-- **services/**: 业务逻辑服务
-- **utils/**: 工具函数
-- **types/**: TypeScript类型定义
-- **assets/**: 静态资源
-- **components/**: 公共组件
+### 3.1 Project Structure
 
-## 5. 详细功能设计
-
-### 5.1 会员建档功能
-#### 5.1.1 会员录入流程
-1. 点击"新增会员"按钮
-2. 填写会员基本信息，如姓名、手机号等
-3. 系统自动生成会员唯一标识
-5. 确认保存，生成会员记录
-
-#### 5.1.2 会员搜索与筛选
-- 支持按姓名、手机号搜索
-- 支持按开卡时间排序
-
-### 5.2 充值记录功能
-#### 5.2.1 充值流程
-1. 从会员列表选择会员
-2. 进入充值页面，显示当前剩余剪发次数
-3. 输入充值剪发次数
-4. 输入充值金额（仅用于报表统计）
-5. 选择支付方式
-6. 确认充值，更新会员剩余剪发次数
-7. 生成充值记录（包含金额用于报表）
-
-#### 5.2.2 充值记录查询
-- 按会员查看历史充值
-- 按时间范围统计充值总次数和总金额
-- 支持导出为Excel（可选）
-
-### 5.3 消费记账功能
-#### 5.3.1 消费流程
-1. 选择会员
-2. 选择服务类型
-3. 系统确认需要消耗的剪发次数
-4. 选择美发师
-5. 确认消费，扣减会员剩余剪发次数
-6. 生成消费记录
-
-### 5.4 报表功能
-#### 5.4.1 日报表
-- 今日充值次数统计
-- 今日充值金额统计
-- 今日消费次数统计
-- 服务类型使用排行
-- 美发师业绩统计
-
-#### 5.4.2 月报表
-- 月度经营概览（充值次数、充值金额、消费次数）
-- 会员增长分析
-- 服务类型使用占比
-- 会员消费习惯分析
-
-## 6. UI/UX设计规范
-
-### 6.1 设计原则
-- **简洁性**: 界面简洁，操作步骤最少化
-- **一致性**: 保持统一的视觉风格和交互模式
-- **高效性**: 常用功能触手可及
-- **响应式**: 适配不同屏幕尺寸
-
-### 6.2 主要页面布局
-- **首页**: 快速入口（会员、充值、消费、报表）
-- **会员管理页**: 会员列表 + 搜索 + 新增按钮
-- **充值页**: 会员信息 + 充值表单 + 历史记录
-- **消费页**: 会员信息 + 服务项目选择 + 支付确认
-- **报表页**: 日期选择器 + 各类图表展示
-
-### 6.3 配色方案
-- 主色调: #409EFF (蓝色，代表专业和信任)
-- 辅助色: #67C23A (绿色，代表成功和增长)
-- 警示色: #F56C6C (红色，代表警告和错误)
-- 背景色: #F5F7FA (浅灰色，舒适阅读)
-
-## 7. 开发计划
-
-### 7.1 第一阶段：基础框架搭建 (1周)
-- [x] 克隆uni-plus仓库
-- [x] 配置开发环境
-- [x] 创建项目结构
-- [ ] 集成SQLite数据库
-- [x] 实现基础UI组件
-- [x] 底部导航栏配置与图标
-- [x] pages.config.ts 配置
-
-### 7.2 第二阶段：核心功能开发 (2周)
-- [x] 会员模块页面框架
-- [x] TypeScript 类型定义
-- [x] 会员列表UI界面
-- [x] 会员详情/编辑页面框架
-- [ ] 数据库表结构实现
-- [ ] 会员建档功能业务逻辑
-- [ ] 会员列表业务逻辑
-
-### 7.3 第三阶段：业务功能开发 (2周)
-- [x] 充值页面框架
-- [x] 消费页面框架
-- [x] 服务类型管理页面框架
-- [x] 美发师管理页面框架
-- [ ] 充值记录模块业务逻辑
-- [ ] 消费记账模块业务逻辑
-- [ ] 服务项目管理业务逻辑
-- [ ] 数据校验和异常处理
-
-### 7.4 第四阶段：报表功能开发 (1周)
-- [x] 报表页面框架
-- [ ] 日报表功能
-- [ ] 月报表功能
-- [ ] 数据可视化（使用Echarts）
-- [ ] 报表导出功能
-
-### 7.5 第五阶段：测试与优化 (1周)
-- [ ] 功能测试
-- [ ] 性能优化
-- [ ] 界面优化
-- [ ] 数据备份功能
-
-### 7.6 第六阶段：打包发布 (1周)
-- [ ] Android应用打包
-- [ ] 应用签名配置
-- [ ] 安装包测试
-- [ ] 正式发布
-
-## 8. 当前项目状态 (2026-05-23 更新)
-
-### 8.1 已完成功能
-| 模块 | 详情 |
-|------|------|
-| 项目基础架构 | uni-plus 框架完整搭建，底部导航栏配置完成，4个主tab页面可用 |
-| UI 页面 | 首页、会员列表、会员详情/编辑、充值、消费、报表、服务类型、美发师、设置页面框架均已创建 |
-| 数据类型 | TypeScript 类型定义已完成（Member、Recharge、Consumption、ServiceType、Hairstylist） |
-| 服务层骨架 | services/ 目录下所有业务模块的 service 文件已创建 |
-
-### 8.2 待完成功能
-| 模块 | 详情 |
-|------|------|
-| 数据库 | SQLite/LocalStorage 未实现 |
-| 业务逻辑 | 所有 service 业务逻辑未实现 |
-| 首页数据 | 目前为模拟数据，需要对接真实数据 |
-
-### 8.3 项目文件结构
 ```
 src/
-├── pages/
-│   ├── index/index.vue          # 首页（已完成UI）
-│   ├── member/list.vue        # 会员列表（已完成UI）
-│   ├── member/detail.vue      # 会员详情
-│   ├── member/edit.vue       # 会员编辑/新增
-│   ├── recharge/index.vue    # 充值页面
-│   ├── consumption/index.vue # 消费记账
-│   ├── report/index.vue       # 报表
-│   ├── serviceType/list.vue   # 服务类型管理
-│   ├── hairstylist/list.vue  # 美发师管理
-│   └── settings/index.vue   # 设置
-├── services/
-│   ├── db.ts                 # 数据库服务（待实现）
-│   ├── memberService.ts       # 会员服务（待实现）
-│   ├── rechargeService.ts     # 充值服务（待实现）
-│   ├── consumptionService.ts # 消费服务（待实现）
-│   ├── serviceTypeService.ts # 服务类型服务（待实现）
-│   └── hairstylistService.ts # 美发师服务（待实现）
-└── types/index.ts            # 类型定义（已完成）
+├── pages/                    # Page views
+│   ├── index/index.vue      # Home (tabBar)
+│   ├── member/              # Member module
+│   │   ├── list.vue         # Member list (tabBar)
+│   │   ├── detail.vue       # Member detail
+│   │   └── edit.vue         # Add/edit member
+│   ├── recharge/index.vue   # Recharge (tabBar)
+│   ├── consumption/index.vue # Consumption (tabBar)
+│   ├── report/index.vue     # Reports
+│   ├── settings/index.vue   # Settings
+│   ├── tierSettings/index.vue # Tier pricing settings
+│   ├── serviceType/list.vue # Service types
+│   └── hairstylist/list.vue # Hairstylists
+├── services/                # Business logic layer
+│   ├── db.ts                # Local storage DB wrapper
+│   ├── memberService.ts
+│   ├── rechargeService.ts
+│   ├── consumptionService.ts
+│   ├── serviceTypeService.ts
+│   ├── hairstylistService.ts
+│   └── settingsService.ts
+├── components/              # Reusable components
+│   └── BottomNavigation.vue # Custom bottom navigation
+├── types/index.ts           # TypeScript interfaces
+└── static/                  # Static assets (tabbar icons, etc.)
 ```
 
-### 8.4 配色方案更新
-- 主色调: #0d9488（青绿色）
-- 辅助色: #14b8a6（浅青绿色）
-- 警示色: #ef4444（红色）
-- 背景色: #f9fafb（浅灰色）
+### 3.2 Core Types (src/types/index.ts)
 
-## 8. 风险评估与应对
+| Type | Description |
+|------|-------------|
+| `Member` | Member profile with `balance` and `tierId` |
+| `MemberTier` | Tiered pricing: initial recharge + service prices |
+| `TierPrice` | Price per service for a tier |
+| `Recharge` | Recharge record with `amount` (for reports) |
+| `Consumption` | Consumption record with `amount` |
+| `ServiceType` | Service definitions |
+| `Hairstylist` | Hairstylist definitions |
 
-### 8.1 潜在风险
-- **数据安全风险**: 单机应用数据丢失风险
-- **性能问题**: 大量数据时的响应速度
-- **兼容性问题**: 不同安卓设备的适配
-- **功能扩展**: 后续多平台支持的复杂性
+### 3.3 Data Flow
 
-### 8.2 应对措施
-- **数据备份**: 实现本地数据自动备份功能
-- **性能优化**: 采用分页加载、数据缓存等技术
-- **兼容性测试**: 在主流安卓设备上充分测试
-- **架构设计**: 采用模块化设计，便于后续扩展
+```
+Pages (Vue) → Services (CRUD) → db.ts → uni.setStorageSync
+     ↑                                                      ↓
+     └──────── computed properties / reactive refs ─────────┘
+```
 
-## 9. 后续扩展计划
+All services use `db.ts` which handles automatic data migration from older schema versions.
 
-### 9.1 功能扩展
-- 暂无
+### 3.4 TabBar Navigation
 
-### 9.2 平台扩展
-- iOS版本开发
-- 微信小程序版本
-- 云端同步功能（多设备数据同步）
+4 main tabBar pages:
+1. 首页 (Home)
+2. 会员 (Member list)
+3. 充值 (Recharge)
+4. 消费 (Consumption)
 
-### 9.3 技术升级
-- 引入机器学习分析会员消费习惯
-- 实现数据可视化大屏
+**Important**: To navigate between tabBar pages, use `uni.switchTab` instead of `uni.navigateTo`. To pass data between tabBar pages, use `(getApp() as any).pendingMemberId`.
 
-## 10. 项目资源
+### 3.5 Page Refresh Pattern
 
-### 10.1 参考文档
-- [uni-plus GitHub仓库](https://github.com/DaMaiCoding/uni-plus)
-- [uni-app官方文档](https://uniapp.dcloud.net.cn/)
-- [SQLite for uni-app文档](https://ext.dcloud.net.cn/plugin?id=160)
+All pages refresh data in `onShow()` lifecycle hook. Recharge and consumption pages also use `watch` on their active tab state to refresh data when switching tabs within the same page.
 
-### 10.2 开发工具
-- VS Code (推荐插件: Volar, ESLint, Prettier)
-- HBuilderX (用于打包发布)
-- Android Studio (用于调试)
-- SQLite Browser (数据库管理)
+## 4. Key Implementation Details
 
-### 10.3 第三方库
-- Echarts: 数据可视化
-- uni-ui: UI组件库
-- @dcloudio/uni-app: uni-app核心库
-- sqlite3: 本地数据库
+### 4.1 Balance-Based System
 
----
+The system was recently refactored from haircut-count-based to balance-based:
+- `Member.balance`: Main currency (stored as number)
+- `MemberTier`: Optional tier that defines service prices based on initial recharge
+- `Recharge.amount`: Tracks recharge amounts (for reporting only - doesn't directly set balance; services update member balance via `updateBalance()`)
+- `Consumption.amount`: Service cost deducted from balance
 
-**版本信息**
-- 文档版本: 1.3
-- 创建时间: 2026-05-23
-- 最后更新: 2026-05-23
-- 作者: 浩了一个憨
-- 更新内容: 
-  - v1.1: 业务逻辑调整为纯剪发次数模式，去除金额相关功能
-  - v1.2: 充值记录增加金额字段，仅用于报表统计，不关联会员余额
-  - v1.3: 记录当前开发进度，UI框架已基本完成
+### 4.2 Tiered Pricing
+
+Located in Settings → 梯度设置 (Tier Settings):
+- Tiers define initial recharge amount and per-service prices
+- Members can be assigned a tier during creation/edit
+- Remaining haircut count is calculated as `floor(balance / tierPrice)`
+
+### 4.3 Date Formatting
+
+**No timezone suffixes** (GMT+0800) anywhere in the UI. Date helpers format times consistently across all pages.
+
+### 4.4 Recent Activity (Home Page)
+
+Only shows today and yesterday data, sorted reverse chronologically.
+
+## 5. Current Status
+
+### 5.1 Completed (as of 2026-05-25)
+
+- ✅ Core features: Member management, recharge, consumption
+- ✅ Tiered pricing system
+- ✅ Balance-based accounting
+- ✅ Reports (daily, monthly, member) with export
+- ✅ Data persistence with uni.setStorageSync
+- ✅ All UI pages and navigation
+- ✅ Date/time formatting without timezone
+- ✅ Page refresh onShow/tab switch
+- ✅ Quick actions for consumption
+- ✅ Search/filter for records
+
+### 5.2 Pending Tasks
+
+See task list in Claude Code for:
+- Data visualization charts (Task #17)
+- Member list sorting (Task #18)
+- Settings page placeholder improvements (Task #19)
+
+## 6. Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `pages.config.ts` | TabBar config, route definitions |
+| `vite.config.ts` | Vite build config |
+| `unocss.config.ts` | UnoCSS utility classes |
+| `.eslintrc`, `.prettierrc`, `stylelint.config.*` | Linting/formatting |
+

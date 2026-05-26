@@ -56,23 +56,36 @@
       <!-- 服务类型选择 -->
       <div style="margin-bottom: 20px;" v-if="selectedMember">
         <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">选择服务</div>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
           <div
             v-for="service in serviceTypes"
             :key="service.id"
-            style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; cursor: pointer;"
-            :style="form.serviceType === service.name ? 'border-color: #14b8a6; background-color: #ccfbf1;' : ''"
+            style="background-color: white; border: 2px solid #f3f4f6; padding: 16px; cursor: pointer; border-radius: 12px; transition: all 0.2s ease; position: relative;"
+            :style="form.serviceType === service.name ? 'border-color: #14b8a6; background: linear-gradient(135deg, #ccfbf1 0%, #f0fdfa 100%); box-shadow: 0 4px 12px rgba(20, 184, 166, 0.15);' : 'border-color: #f3f4f6; background-color: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);'"
             @click="selectService(service)"
           >
-            <div style="font-weight: 600; color: #1f2937; font-size: 16px; margin-bottom: 4px;">{{ service.name }}</div>
-            <div style="font-size: 14px; color: #6b7280;">-¥{{ getServicePrice(service) }}</div>
+            <div v-if="form.serviceType === service.name" style="position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background: #14b8a6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <span style="color: white; font-size: 14px; font-weight: bold;">✓</span>
+            </div>
+            <div style="font-weight: 600; color: #1f2937; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <span v-if="service.name.includes('剪')">✂️</span>
+              <span v-else-if="service.name.includes('染')">🎨</span>
+              <span v-else-if="service.name.includes('烫')">💁</span>
+              <span v-else-if="service.name.includes('洗')">🧴</span>
+              <span v-else-if="service.name.includes('护')">💆</span>
+              <span v-else>💇</span>
+              {{ service.name }}
+            </div>
+            <div style="font-size: 18px; font-weight: 700; color: #0d9488;">
+              -¥{{ getServicePrice(service) }}
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 美发师选择 -->
       <div style="background-color: white; border: 1px solid #f3f4f6; padding: 16px; margin-bottom: 16px;" v-if="selectedMember">
-        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">发型师</div>
+        <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">发型师 <span style="color: #ef4444;">*</span></div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
           <div
             v-for="stylist in hairstylists"
@@ -119,17 +132,9 @@
             <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
             <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-¥{{ record.amount }}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
             <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
             <span>{{ formatTime(getTimeField(record)) }}</span>
-          </div>
-          <div style="display: flex; justify-content: flex-end;">
-            <button
-              style="padding: 8px 16px; background-color: #ccfbf1; color: #0d9488; font-size: 12px; font-weight: 500; border: none; border-radius: 4px; cursor: pointer;"
-              @click="quickCopyRecord(record)"
-            >
-              快速复制
-            </button>
           </div>
         </div>
       </div>
@@ -150,17 +155,9 @@
             <span style="font-weight: 600; color: #1f2937; font-size: 16px;">{{ getMemberName(record.memberId) }}</span>
             <span style="font-weight: 700; color: #ef4444; font-size: 16px;">-¥{{ record.amount }}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
             <span>{{ record.serviceType }} · {{ record.hairstylist || '未指定' }}</span>
             <span>{{ formatDate(getTimeField(record)) }}</span>
-          </div>
-          <div style="display: flex; justify-content: flex-end;">
-            <button
-              style="padding: 8px 16px; background-color: #ccfbf1; color: #0d9488; font-size: 12px; font-weight: 500; border: none; border-radius: 4px; cursor: pointer;"
-              @click="quickCopyRecord(record)"
-            >
-              快速复制
-            </button>
           </div>
         </div>
       </div>
@@ -227,7 +224,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { memberService } from '@/services/memberService'
 import { serviceTypeService } from '@/services/serviceTypeService'
 import { hairstylistService } from '@/services/hairstylistService'
@@ -240,6 +237,7 @@ const showMemberSelector = ref(false)
 const memberSearchKeyword = ref('')
 const selectedMember = ref<Member | null>(null)
 const initialMemberId = ref<string | null>(null)
+const refreshKey = ref(0)
 
 const systemSettings = settingsService.getSystemSettings()
 
@@ -261,6 +259,7 @@ const form = ref({
 const canSubmit = computed(() => {
   return selectedMember.value &&
     form.value.serviceType &&
+    form.value.hairstylist &&
     form.value.amount > 0 &&
     form.value.amount <= selectedMember.value.balance
 })
@@ -276,16 +275,26 @@ const filteredMembers = computed(() => {
 })
 
 const todayConsumptions = computed(() => {
+  // 依赖 refreshKey 来强制刷新
+  refreshKey.value
   const today = new Date().toDateString()
   return consumptionService.getAll().filter(r => {
     const timeField = r.consumptionTime || (r as any).consumeTime || ''
     const consumeDate = new Date(timeField).toDateString()
     return consumeDate === today
-  }).reverse()
+  }).sort((a, b) => {
+    const timeA = new Date(a.consumptionTime || (a as any).consumeTime || '').getTime()
+    const timeB = new Date(b.consumptionTime || (b as any).consumeTime || '').getTime()
+    return timeB - timeA
+  })
 })
 
 const allConsumptions = computed(() => {
-  return [...consumptionService.getAll()].reverse()
+  return [...consumptionService.getAll()].sort((a, b) => {
+    const timeA = new Date(a.consumptionTime || (a as any).consumeTime || '').getTime()
+    const timeB = new Date(b.consumptionTime || (b as any).consumeTime || '').getTime()
+    return timeB - timeA
+  })
 })
 
 function getServicePrice(service: ServiceType): number {
@@ -326,14 +335,20 @@ function formatTime(timeStr: string) {
   const time = new Date(timeStr)
   const today = new Date()
   if (time.toDateString() === today.toDateString()) {
-    return time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+    const hours = String(time.getHours()).padStart(2, '0')
+    const minutes = String(time.getMinutes()).padStart(2, '0')
+    return `${hours}:${minutes}`
   }
   return '昨天'
 }
 
 function formatDate(timeStr: string) {
   const time = new Date(timeStr)
-  return time.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  const month = time.getMonth() + 1
+  const day = time.getDate()
+  const hours = String(time.getHours()).padStart(2, '0')
+  const minutes = String(time.getMinutes()).padStart(2, '0')
+  return `${month}月${day}日 ${hours}:${minutes}`
 }
 
 // 兼容字段名
@@ -347,31 +362,27 @@ function selectMember(member: Member) {
 }
 
 function selectService(service: ServiceType) {
-  form.value.serviceType = service.name
-  form.value.amount = getServicePrice(service)
-}
-
-function quickCopyRecord(record: any) {
-  // 自动选中会员
-  const member = memberService.getById(record.memberId)
-  if (member) {
-    selectedMember.value = member
+  if (form.value.serviceType === service.name) {
+    // 已选中，取消选择
+    form.value.serviceType = ''
+    form.value.amount = 0
+  } else {
+    // 未选中，选中该服务
+    form.value.serviceType = service.name
+    form.value.amount = getServicePrice(service)
   }
-  // 填充表单
-  form.value.serviceType = record.serviceType
-  form.value.amount = record.amount
-  form.value.hairstylist = record.hairstylist || ''
-  form.value.remark = record.remark || ''
-  // 切换到快速消费tab
-  activeTab.value = 'quick'
-  uni.showToast({
-    title: '已复制记录',
-    icon: 'success'
-  })
 }
 
 function handleSubmit() {
-  if (!canSubmit.value || !selectedMember.value) return
+  if (!canSubmit.value || !selectedMember.value) {
+    if (!form.value.hairstylist) {
+      uni.showToast({
+        title: '请选择发型师',
+        icon: 'none'
+      })
+    }
+    return
+  }
 
   const result = consumptionService.add({
     memberId: selectedMember.value.id,
@@ -404,6 +415,9 @@ function handleSubmit() {
   if (selectedMember.value) {
     selectedMember.value = memberService.getById(selectedMember.value.id)
   }
+
+  // 强制刷新今日消费记录
+  refreshKey.value++
 }
 
 onLoad((options: any) => {
@@ -447,6 +461,27 @@ onShow(() => {
   }
   serviceTypes.value = serviceTypeService.getAll()
   hairstylists.value = hairstylistService.getAll()
+})
+
+// 监听tab切换，刷新数据
+watch(activeTab, (newTab) => {
+  if (newTab === 'history') {
+    // 这里可以添加刷新消费历史数据的逻辑
+  }
+})
+
+// 监听发型师列表变化，始终选中第一个
+watch(hairstylists, (newHairstylists) => {
+  if (newHairstylists.length > 0) {
+    form.value.hairstylist = newHairstylists[0].name
+  }
+}, { immediate: true })
+
+// 监听form.hairstylist，如果为空且有发型师列表，则自动选中第一个
+watch(() => form.value.hairstylist, (newHairstylist) => {
+  if (!newHairstylist && hairstylists.value.length > 0) {
+    form.value.hairstylist = hairstylists.value[0].name
+  }
 })
 </script>
 

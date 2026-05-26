@@ -72,16 +72,6 @@
       <!-- 数据管理 -->
       <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">数据管理</div>
       <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
-          <span style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">📁</span>
-            <span style="font-size: 14px; color: #1f2937;">自动备份</span>
-          </span>
-          <div style="flex: 1;"></div>
-          <div style="width: 52px; height: 30px; position: relative; cursor: pointer;" :style="systemSettings.autoBackup ? 'background-color: #14b8a6;' : 'background-color: #e5e7eb;'" @click="toggleAutoBackup">
-            <div style="position: absolute; width: 26px; height: 26px; background-color: white; top: 2px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); transition: all 0.2s;" :style="systemSettings.autoBackup ? 'left: 24px;' : 'left: 2px;'"></div>
-          </div>
-        </div>
         <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" @click="showBackupList">
           <span style="display: flex; align-items: center; gap: 12px;">
             <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">⏰</span>
@@ -130,19 +120,6 @@
         </div>
       </div>
 
-      <!-- 系统设置 -->
-      <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">系统设置</div>
-      <div style="background-color: white; border: 1px solid #f3f4f6; overflow: hidden; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; cursor: pointer;" @click="showFeatureToast('theme')">
-          <span style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 28px; height: 28px; background-color: #ccfbf1; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 18px;">🎨</span>
-            <span style="font-size: 14px; color: #1f2937;">主题设置</span>
-          </span>
-          <div style="flex: 1;"></div>
-          <span style="color: #6b7280; font-size: 14px; margin-right: 8px;">{{ systemSettings.theme }}</span>
-          <span style="color: #9ca3af; font-size: 20px; font-weight: bold;">›</span>
-        </div>
-      </div>
 
       <!-- 其他 -->
       <div style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">其他</div>
@@ -186,8 +163,8 @@
 
       <!-- 应用信息 -->
       <div style="background-color: white; border: 1px solid #f3f4f6; padding: 24px; text-align: center; margin-bottom: 16px;">
-        <div style="width: 76px; height: 76px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); display: flex; align-items: center; justify-content: center; color: white; margin: 0 auto; margin-bottom: 14px; font-size: 30px;">💇</div>
-        <div style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">理发店记卡系统</div>
+        <image src="/static/logo.png" style="width: 76px; height: 76px; margin: 0 auto; margin-bottom: 14px; border-radius: 12px;" mode="aspectFit" />
+        <div style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">渲染记账</div>
         <div style="font-size: 14px; color: #6b7280;">版本 1.0.0</div>
       </div>
 
@@ -230,10 +207,9 @@
     <!-- 备份列表弹窗 -->
     <div v-if="showBackupListDialog" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: flex-end;" @click.self="closeBackupList">
       <div style="background-color: white; width: 100%; max-height: 70vh; display: flex; flex-direction: column;">
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
-          <button style="color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer;" @click="closeBackupList">关闭</button>
-          <span style="font-weight: 500; color: #1f2937;">备份管理</span>
-          <div style="width: 40px;"></div>
+        <div style="display: flex; align-items: center; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+          <button style="color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer; flex-shrink: 0;" @click="closeBackupList">关闭</button>
+          <span style="flex: 1; text-align: center; font-weight: 500; color: #1f2937;">备份管理</span>
         </div>
         <div style="flex: 1; overflow-y: auto; padding: 16px;">
           <div v-if="backupList.length > 0" style="display: flex; flex-direction: column; gap: 10px;">
@@ -269,30 +245,6 @@
       </div>
     </div>
 
-    <!-- 主题设置弹窗 -->
-    <div v-if="showThemeDialogFlag" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: flex-end;" @click.self="closeThemeDialog">
-      <div style="background-color: white; width: 100%;">
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
-          <button style="color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer;" @click="closeThemeDialog">关闭</button>
-          <span style="font-weight: 500; color: #1f2937;">选择主题</span>
-          <div style="width: 40px;"></div>
-        </div>
-        <div style="padding: 20px;">
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            <div
-              v-for="theme in ['青色主题', '蓝色主题', '紫色主题']"
-              :key="theme"
-              style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background-color: #f9fafb; border: 1px solid #f3f4f6; cursor: pointer;"
-              :style="systemSettings.theme === theme ? 'border-color: #0d9488;' : ''"
-              @click="selectTheme(theme)"
-            >
-              <span style="font-size: 14px; color: #1f2937;">{{ theme }}</span>
-              <span v-if="systemSettings.theme === theme" style="color: #0d9488; font-size: 18px;">✓</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- 简单页面弹窗 -->
     <div v-if="showSimplePageFlag" style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: center; justify-content: center;">
@@ -305,8 +257,8 @@
         </div>
         <div style="padding: 20px; overflow-y: auto;">
           <div v-if="simplePageType === 'about'" style="text-align: center;">
-            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; margin: 0 auto 16px auto;">💇</div>
-            <h2 style="font-size: 20px; font-weight: 600; color: #1f2937; margin: 0 0 4px 0;">理发店记卡系统</h2>
+            <image src="/static/logo.png" style="width: 80px; height: 80px; margin: 0 auto 16px auto; border-radius: 16px;" mode="aspectFit" />
+            <h2 style="font-size: 20px; font-weight: 600; color: #1f2937; margin: 0 0 4px 0;">渲染记账</h2>
             <p style="font-size: 14px; color: #6b7280; margin: 0 0 16px 0;">版本 1.0.0</p>
             <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
               一款专为理发店设计的单机版会员记卡系统，方便管理会员、记录充值和消费。
@@ -368,19 +320,34 @@ import { hairstylistService } from '@/services/hairstylistService'
 // 设置数据
 const shopSettings = ref<ShopSettings>(settingsService.getShopSettings())
 const systemSettings = ref<SystemSettings>(settingsService.getSystemSettings())
+const settingsRefreshKey = ref(0)
 
 // 计数
-const serviceTypeCount = computed(() => serviceTypeService.getAll().length)
-const tierCount = computed(() => systemSettings.value.memberTiers?.length || 0)
-const hairstylistCount = computed(() => hairstylistService.getAll().length)
+const serviceTypeCount = computed(() => {
+  settingsRefreshKey.value
+  return serviceTypeService.getAll().length
+})
+const tierCount = computed(() => {
+  settingsRefreshKey.value
+  return systemSettings.value.memberTiers?.length || 0
+})
+const hairstylistCount = computed(() => {
+  settingsRefreshKey.value
+  return hairstylistService.getAll().length
+})
 
 // 备份相关
 const backupList = ref<any[]>([])
+const backupRefreshKey = ref(0)
 const lastBackup = computed(() => {
+  backupRefreshKey.value // 依赖刷新 key
   const list = settingsService.getBackupList()
   return list.length > 0 ? list[0] : null
 })
-const backupCount = computed(() => settingsService.getBackupList().length)
+const backupCount = computed(() => {
+  backupRefreshKey.value // 依赖刷新 key
+  return settingsService.getBackupList().length
+})
 const lastBackupText = computed(() => {
   if (!lastBackup.value) return ''
   const now = new Date()
@@ -415,10 +382,6 @@ function handleNavigate(path: string) {
 }
 
 function showFeatureToast(feature?: string) {
-  if (feature === 'theme') {
-    showThemeDialog()
-    return
-  }
   if (feature === 'help' || feature === 'about' || feature === 'guide') {
     showSimplePage(feature)
     return
@@ -427,23 +390,6 @@ function showFeatureToast(feature?: string) {
     title: '功能开发中',
     icon: 'none'
   })
-}
-
-// 主题设置
-const showThemeDialogFlag = ref(false)
-
-function showThemeDialog() {
-  showThemeDialogFlag.value = true
-}
-
-function closeThemeDialog() {
-  showThemeDialogFlag.value = false
-}
-
-function selectTheme(theme: string) {
-  systemSettings.value = settingsService.saveSystemSettings({ theme })
-  closeThemeDialog()
-  uni.showToast({ title: '已切换主题', icon: 'success' })
 }
 
 // 简单页面展示
@@ -486,18 +432,9 @@ function saveDialog() {
     title: '保存成功',
     icon: 'success'
   })
+  refreshSettings()
 }
 
-// 自动备份开关
-function toggleAutoBackup() {
-  systemSettings.value = settingsService.saveSystemSettings({
-    autoBackup: !systemSettings.value.autoBackup
-  })
-  uni.showToast({
-    title: systemSettings.value.autoBackup ? '已开启自动备份' : '已关闭自动备份',
-    icon: 'success'
-  })
-}
 
 // 立即备份
 function handleBackup() {
@@ -517,6 +454,7 @@ function handleBackup() {
       icon: 'none'
     })
   }
+  refreshSettings()
 }
 
 // 备份列表
@@ -531,14 +469,20 @@ function closeBackupList() {
 
 function refreshBackupList() {
   backupList.value = settingsService.getBackupList()
+  backupRefreshKey.value++
 }
 
 function formatBackupTime(date: Date): string {
-  return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${hours}:${minutes}`
 }
 
 function formatBackupDate(date: Date): string {
-  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 // 恢复备份
@@ -559,9 +503,7 @@ function restoreBackup(id: string) {
             title: '恢复成功',
             icon: 'success'
           })
-          // 刷新设置
-          shopSettings.value = settingsService.getShopSettings()
-          systemSettings.value = settingsService.getSystemSettings()
+          refreshSettings()
         } else {
           uni.showToast({
             title: result.message || '恢复失败',
@@ -587,6 +529,7 @@ function deleteBackup(id: string) {
           title: '删除成功',
           icon: 'success'
         })
+        refreshSettings()
       }
     }
   })
@@ -628,9 +571,7 @@ function showImportDialog() {
                   title: '导入成功',
                   icon: 'success'
                 })
-                // 刷新设置
-                shopSettings.value = settingsService.getShopSettings()
-                systemSettings.value = settingsService.getSystemSettings()
+                refreshSettings()
               } else {
                 uni.showToast({
                   title: result.message || '导入失败',
@@ -643,6 +584,13 @@ function showImportDialog() {
       }
     }
   })
+}
+
+// 刷新设置数据
+function refreshSettings() {
+  shopSettings.value = settingsService.getShopSettings()
+  systemSettings.value = settingsService.getSystemSettings()
+  settingsRefreshKey.value++
 }
 
 // 清除所有数据
@@ -665,9 +613,7 @@ function handleClearAllData() {
                   title: '数据已清除',
                   icon: 'success'
                 })
-                // 刷新设置
-                shopSettings.value = settingsService.getShopSettings()
-                systemSettings.value = settingsService.getSystemSettings()
+                refreshSettings()
               }
             }
           }
@@ -678,9 +624,7 @@ function handleClearAllData() {
 }
 
 onShow(() => {
-  // 刷新设置
-  shopSettings.value = settingsService.getShopSettings()
-  systemSettings.value = settingsService.getSystemSettings()
+  refreshSettings()
 })
 </script>
 

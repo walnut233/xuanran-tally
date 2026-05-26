@@ -45,9 +45,22 @@ function migrateData(data: any): DBData {
 
   // 迁移消费数据
   if (data.consumptions && Array.isArray(data.consumptions)) {
+    // 服务类型英文字段到中文的映射
+    const serviceTypeMap: Record<string, string> = {
+      'haircut': '剪发',
+      'dye': '染发',
+      'perm': '烫发',
+      'care': '护理',
+      'wash': '洗发'
+    }
+
     data.consumptions = data.consumptions.map((consumption: any) => {
       if (consumption.usedHaircuts !== undefined && consumption.amount === undefined) {
         consumption.amount = consumption.usedHaircuts * 30 // 默认按30元一次计算
+      }
+      // 将英文字段的 serviceType 转换为中文
+      if (consumption.serviceType && serviceTypeMap[consumption.serviceType]) {
+        consumption.serviceType = serviceTypeMap[consumption.serviceType]
       }
       return consumption
     })

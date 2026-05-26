@@ -1,8 +1,6 @@
-import { ref } from 'vue'
-
 // 今日消费时段分布柱状图
 export const useTimeDistributionChart = (data: number[]) => {
-  const option = ref({
+  return {
     xAxis: {
       data: ['9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点'],
       axisTick: {
@@ -64,13 +62,12 @@ export const useTimeDistributionChart = (data: number[]) => {
         borderRadius: [4, 4, 0, 0]
       }
     }
-  })
-  return option
+  }
 }
 
 // 服务类型分布饼图
 export const useServiceTypePieChart = (data: { name: string; value: number }[]) => {
-  const option = ref({
+  return {
     tooltip: {
       trigger: 'item',
       padding: [8, 12]
@@ -115,13 +112,12 @@ export const useServiceTypePieChart = (data: { name: string; value: number }[]) 
         color: ['#14b8a6', '#0d9488', '#ef4444', '#f59e0b', '#8b5cf6']
       }
     ]
-  })
-  return option
+  }
 }
 
 // 月度趋势折线图
 export const useMonthlyTrendChart = (rechargeData: number[], consumeData: number[]) => {
-  const option = ref({
+  return {
     xAxis: {
       data: Array.from({ length: 31 }, (_, i) => `${i + 1}日`),
       boundaryGap: false,
@@ -240,6 +236,5 @@ export const useMonthlyTrendChart = (rechargeData: number[], consumeData: number
         }
       }
     ]
-  })
-  return option
+  }
 }

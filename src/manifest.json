@@ -1,9 +1,9 @@
 {
-    "name" : "渲染造型",
-    "appid" : "__UNI__42E0EC3",
-    "description" : "渲染造型记账软件",
-    "versionName" : "1.0.1",
-    "versionCode" : 101,
+    "name" : "渲染记账",
+    "appid" : "__UNI__1F1907B",
+    "description" : "理发店记账软件",
+    "versionName" : "1.0.0",
+    "versionCode" : 100,
     /* 5+App特有相关 */
     "app-plus" : {
         "usingComponents" : true,
@@ -18,7 +18,7 @@
         "modules" : {
             "SQLite" : {}
         },
-        "darkmode" : true, // 开启支持深色模式
+        "darkmode" : false, // 开启支持深色模式
         "themeLocation" : "theme.json", // 深色模式JSON文件，如果 theme.json 在根目录可省略
 
         /* 应用发布信息 */
@@ -41,15 +41,52 @@
                     "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
                     "<uses-feature android:name=\"android.hardware.camera\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
-                ]
+                ],
+                "minSdkVersion" : 21,
+                "targetSdkVersion" : 29,
+                "abiFilters" : [ "armeabi-v7a", "arm64-v8a", "x86" ],
+                "schemes" : "xuanran"
             },
             /* ios打包配置 */
             "ios" : {
-                "dSYMs" : false
+                "dSYMs" : true,
+                "urltypes" : "xuanran"
             },
             /* SDK配置 */
             "sdkConfigs" : {
                 "ad" : {}
+            },
+            "icons" : {
+                "android" : {
+                    "hdpi" : "unpackage/res/icons/72x72.png",
+                    "xhdpi" : "unpackage/res/icons/96x96.png",
+                    "xxhdpi" : "unpackage/res/icons/144x144.png",
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                },
+                "ios" : {
+                    "appstore" : "unpackage/res/icons/1024x1024.png",
+                    "ipad" : {
+                        "app" : "unpackage/res/icons/76x76.png",
+                        "app@2x" : "unpackage/res/icons/152x152.png",
+                        "notification" : "unpackage/res/icons/20x20.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "proapp@2x" : "unpackage/res/icons/167x167.png",
+                        "settings" : "unpackage/res/icons/29x29.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight" : "unpackage/res/icons/40x40.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png"
+                    },
+                    "iphone" : {
+                        "app@2x" : "unpackage/res/icons/120x120.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "notification@3x" : "unpackage/res/icons/60x60.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "settings@3x" : "unpackage/res/icons/87x87.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "spotlight@3x" : "unpackage/res/icons/120x120.png"
+                    }
+                }
             }
         }
     },
@@ -67,7 +104,7 @@
             "swc" : true
         },
         "usingComponents" : true,
-        "darkmode" : true, // 开启支持深色模式
+        "darkmode" : false, // 开启支持深色模式
         "themeLocation" : "theme.json", // 深色模式JSON文件，如果 theme.json 在根目录可省略
         "libVersion" : "latest", // 处理微信开发者工具报错
 
@@ -100,5 +137,10 @@
             "base" : "/uni-plus/"
         }
     },
-    "fallbackLocale" : "zh-Hans"
+    "fallbackLocale" : "zh-Hans",
+    "app-harmony" : {
+        "distribute" : {
+            "bundleName" : "com.app.xuanran"
+        }
+    }
 }

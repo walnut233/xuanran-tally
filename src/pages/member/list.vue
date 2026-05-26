@@ -102,7 +102,7 @@ import { memberService } from "@/services/memberService";
 import type { Member } from "@/types";
 
 const searchKeyword = ref("");
-const sortBy = ref("remaining");
+const sortBy = ref("balance");
 const members = ref<Member[]>([]);
 
 const displayMembers = computed(() => {
